@@ -44,10 +44,10 @@ services:
       - "5433:5432"
     networks:
       - app-network
-
 volumes:
   postgres_data:
   static_volume:
+
 
 networks:
   app-network:

@@ -1,4 +1,0 @@
-charset-normalizer==3.4.7
-pip-chill==1.0.5
-requests==2.33.1
-timedelta==2020.12.3

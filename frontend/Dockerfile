@@ -1,38 +1,33 @@
-# Frontend Dockerfile - Production Optimized
-FROM node:24-alpine AS builder
+# Use Node.js 18 Alpine image
+FROM node:18-alpine AS builder
 
+# Set working directory
 WORKDIR /app
 
-# Copy package files first for better caching
+# Copy package files
 COPY package*.json ./
 
-RUN npm install && \
-    # Verify installation succeeded
-    node -e "require('react')"
+# Install dependencies
+RUN npm ci --only=production
 
-# Copy source code (fixed syntax)
+# Copy source code
 COPY . .
 
-# Build the React app in production mode
+# Build the React app
 RUN npm run build
 
-# Production stage - minimal nginx image
-FROM nginx:stable-alpine AS production
+# Use Nginx to serve the static files
+FROM nginx:alpine
 
-# Install curl for health checks
-RUN apk add --no-cache curl ca-certificates
+# Copy built React app to Nginx static directory
+COPY --from=builder /app/build /usr/share/nginx/html
 
-# Copy built React app from builder stage (Verify if this should be /app/build or /app/dist)
-COPY --from=builder /app/dist /usr/share/nginx/html
-
-# Copy nginx config from build context
+# Copy Nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Expose port 80
+# Expose port
 EXPOSE 80
 
-# Health check (fixed syntax)
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost/health || exit 1
+# Start Nginx
 
 CMD ["nginx", "-g", "daemon off;"]

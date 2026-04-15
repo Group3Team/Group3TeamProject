@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: django-backend
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./backend:/app
+      - static_volume:/app/static
+    environment:
+      - DEBUG=False
+      - SECRET_KEY=your-secret-key-here
+      - ALLOWED_HOSTS=localhost,0.0.0.0,127.0.0.1
+    depends_on:
+      - db
+      - frontend
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: react-frontend
+    ports:
+      - "3000:80"
+    networks:
+      - app-network
+
+  db:
+    image: postgres:13
+    container_name: postgres-db
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+  static_volume:
+
+networks:
+  app-network:
+    driver: bridge

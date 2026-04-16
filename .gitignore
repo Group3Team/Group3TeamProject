@@ -39,7 +39,7 @@ frontend/.env
 *.cer
 *.p12
 *.pfx
-WM_IO_private_key.pem
+*.pem
 google_service_account_key.json
 
 # Prevents Docker Secrets uploads to repo

@@ -20,42 +20,53 @@ groupProject/
 
 ## Setup Instructions
 
-### 1. Backend Setup
+### Prerequisites
+- Docker and Docker Compose installed
+- Python 3.14 (for local development)
+- Node.js 18 (for local development)
+
+### Development Mode with Docker (Recommended)
+```bash
+# Start the entire application using Docker Compose
+docker-compose up --build
+```
+
+This will:
+1. Build both frontend and backend images
+2. Start PostgreSQL database
+3. Run Django backend on port 8001
+4. Serve React frontend on port 3000
+
+### Local Development (Without Docker)
+#### Backend Setup
 ```bash
 cd backend
-source venv/bin/activate  # Activate virtual environment
-python manage.py migrate  # Run database migrations
-python manage.py runserver  # Start Django development server
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py runserver
 ```
 
-### 2. Frontend Setup
+#### Frontend Setup
 ```bash
 cd frontend
-npm install  # Install React dependencies
-npm start    # Start React development server
-```
-
-### 3. Build for Production
-```bash
-cd frontend
-npm run build  # Build React app for production
-cd ../backend
-python manage.py collectstatic  # Collect static files
-python manage.py runserver      # Start Django server
+npm install
+npm start
 ```
 
 ## Running the Project
 
-### Development Mode
-1. Start Django backend: `cd backend && source venv/bin/activate && python manage.py runserver`
-2. Start React frontend: `cd frontend && npm start`
-3. Access the app at `http://localhost:3000`
+### Development Mode with Docker (Recommended)
+1. Run `docker-compose up --build`
+2. Access React frontend at `http://localhost:3000`
+3. Access Django backend API at `http://localhost:8001`
 
 ### Production Mode
-1. Build React app: `cd frontend && npm run build`
-2. Collect static files: `cd backend && python manage.py collectstatic`
-3. Start Django server: `python manage.py runserver`
-4. Access the app at `http://localhost:8000`
+```bash
+# Build and run using Docker Compose for production
+docker-compose -f docker-compose.yml up --build
+```
 
 ## API Endpoints
 The Django backend will serve the React frontend at the root URL and provide API endpoints at `/api/`.

@@ -1,61 +1,109 @@
+# Django + React + Docker Project
 
-# Django + React Project
-
-This project combines a Django backend with a React frontend.
+A Dockerized full-stack application with a Django REST backend, Vite/React frontend, and PostgreSQL database.
 
 ## Project Structure
+
 ```
-groupProject/
-├── backend/          # Django backend
-│   ├── backend/     # Django project settings
-│   ├── frontend/    # Django app for serving React
+Group3TeamProject/
+├── backend/
+│   ├── apps/
+│   │   └── accounts/      # Accounts app
+│   ├── config/             # Django project settings
+│   │   ├── settings.py
+│   │   ├── urls.py
+│   │   └── wsgi.py
+│   ├── Dockerfile
 │   ├── manage.py
 │   └── requirements.txt
-└── frontend/        # React frontend
-    ├── public/
-    ├── src/
-    ├── package.json
-    └── ...
+├── frontend/
+│   ├── src/
+│   ├── public/
+│   ├── Dockerfile          # Multi-stage build (Node + Nginx)
+│   ├── nginx.conf
+│   ├── package.json
+│   └── vite.config.js
+├── docker-compose.dev.yml
+├── .env
+└── README.md
 ```
+
+## Prerequisites
+
+- Docker and Docker Compose
+- **Note:** A Python virtual environment (venv) is not needed. All backend dependencies run inside the Docker containers.
 
 ## Setup Instructions
 
-### 1. Backend Setup
+### 1. Clone and configure environment
+
 ```bash
-cd backend
-source venv/bin/activate  # Activate virtual environment
-python manage.py migrate  # Run database migrations
-python manage.py runserver  # Start Django development server
+git clone <repo-url>
+cd Group3TeamProject
 ```
 
-### 2. Frontend Setup
+Copy `.env.example` to `.env` and update values as needed (or use the existing `.env`).
+
+### 2. Build and start all services
+
 ```bash
-cd frontend
-npm install  # Install React dependencies
-npm start    # Start React development server
+docker compose -f docker-compose.dev.yml up --build -d
 ```
 
-### 3. Build for Production
+### 3. Run database migrations
+
 ```bash
-cd frontend
-npm run build  # Build React app for production
-cd ../backend
-python manage.py collectstatic  # Collect static files
-python manage.py runserver      # Start Django server
+docker exec django-backend python manage.py migrate
 ```
 
-## Running the Project
+### 4. Create a superuser (optional)
 
-### Development Mode
-1. Start Django backend: `cd backend && source venv/bin/activate && python manage.py runserver`
-2. Start React frontend: `cd frontend && npm start`
-3. Access the app at `http://localhost:3000`
+```bash
+docker exec -it django-backend python manage.py createsuperuser
+```
 
-### Production Mode
-1. Build React app: `cd frontend && npm run build`
-2. Collect static files: `cd backend && python manage.py collectstatic`
-3. Start Django server: `python manage.py runserver`
-4. Access the app at `http://localhost:8000`
+## Services
+
+
+| Service  | URL                                            | Description                  |
+| -------- | ---------------------------------------------- | ---------------------------- |
+| Frontend | [http://localhost:5173](http://localhost:5173) | Vite/React (served by Nginx) |
+| Backend  | [http://localhost:8000](http://localhost:8000) | Django REST API (Gunicorn)   |
+| Database | localhost:5432                                 | PostgreSQL 15                |
+
+
+## Common Commands
+
+```bash
+# Start services
+docker compose -f docker-compose.dev.yml up -d
+
+# Stop services
+docker compose -f docker-compose.dev.yml down
+
+# View logs
+docker compose -f docker-compose.dev.yml logs -f
+
+# Run migrations
+docker exec django-backend python manage.py migrate
+
+# Make migrations
+docker exec django-backend python manage.py makemigrations
+
+# Access Django shell
+docker exec -it django-backend python manage.py shell
+
+# Install new frontend packages
+docker exec react-frontend npm install <package-name>
+```
+
+## Tech Stack
+
+- **Frontend:** React 19, Vite, Nginx
+- **Backend:** Django 5.2, Django REST Framework, Gunicorn
+- **Database:** PostgreSQL 15
+- **Containerization:** Docker, Docker Compose
 
 ## API Endpoints
-The Django backend will serve the React frontend at the root URL and provide API endpoints at `/api/`.
+
+The Django backend provides Admin panel available at `/admin/`.

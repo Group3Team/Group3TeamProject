@@ -17,3 +17,5 @@ https://lagranconsulting.notion.site/Mural-Boards-250542ff4d4480a5879cc759305fe6
 **Github Projects**
 https://www.youtube.com/watch?v=oPQgFxHcjAw
 
+**Icons**
+https://fonts.google.com/icons?icon.set=Material+Symbols&icon.style=Sharp&icon.size=24&icon.color=%23e3e3e3&icon.platform=web

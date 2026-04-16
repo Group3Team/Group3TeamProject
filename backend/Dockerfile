@@ -6,29 +6,20 @@ ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 
 # Set working directory
-WORKDIR /app
+RUN mkdir /backend
+WORKDIR /backend
+
+COPY requirements.txt .
 
 # Install system dependencies
-RUN apt-get update && apt-get install -y \
-    gcc \
-    && rm -rf /var/lib/apt/lists/*
+RUN pip install -r requirements.txt
 
 # Copy requirements first for better caching
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy project files
-COPY . .
-
-# Copy frontend build
-COPY ../frontend/build /app/frontend/build
-
-# Collect static files
-RUN python manage.py collectstatic --noinput
+COPY . /backend/
 
 # Expose port
 EXPOSE 8000
 
 # Run the application
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "backend.wsgi:application"]
->>>>>>> main
+CMD gunicorn --bind 0.0.0.0:8000 --workers 3 config.wsgi:application
+

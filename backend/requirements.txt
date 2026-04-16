@@ -1,6 +1,15 @@
-Django>=4.2,<5.0
-gunicorn
+asgiref==3.11.1
+certifi==2026.2.25
 charset-normalizer==3.4.7
+Django==5.2.13
+django-cors-headers==4.9.0
+djangorestframework==3.17.1
+gunicorn==25.3.0
+idna==3.11
+packaging==26.1
 pip-chill==1.0.5
+psycopg2-binary==2.9.11
 requests==2.33.1
+sqlparse==0.5.5
 timedelta==2020.12.3
+urllib3==2.6.3

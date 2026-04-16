@@ -14,17 +14,16 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first for better caching
-COPY requirements.txt .
+COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy project files
 COPY . .
 
-# Copy frontend build
-COPY ../frontend/build /app/frontend/build
-
-# Collect static files
-RUN python manage.py collectstatic --noinput
+# Collect static files (this will include frontend build if it exists)
+# Skip this step in Dockerfile since we're not building the frontend here
+# The frontend should be built separately and served by Django properly
+RUN python manage.py collectstatic --noinput || echo "Static collection skipped"
 
 # Expose port
 EXPOSE 8000

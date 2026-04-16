@@ -1,4 +1,4 @@
-#version: '3.8' "version" setting is deprecated in Docker
+#version: '3.8'
 
 services:
   backend:
@@ -17,9 +17,14 @@ services:
       - ALLOWED_HOSTS=localhost,0.0.0.0,127.0.0.1
     depends_on:
       - db
-      - frontend
     networks:
       - app-network
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   frontend:
     build:
@@ -32,7 +37,7 @@ services:
       - app-network
 
   db:
-    image: postgres:postgres:18.3-trixie  #postgres 13 not supported any more 18.3-trixie latest stable version
+    image: postgres:18.3-trixie  #postgres 13 not supported any more 18.3-trixie latest stable version
     container_name: postgres-db
     environment:
       - POSTGRES_DB=postgres
@@ -47,7 +52,6 @@ services:
 volumes:
   postgres_data:
   static_volume:
-
 
 networks:
   app-network:

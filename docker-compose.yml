@@ -1,4 +1,4 @@
-version: '3.8'
+#version: '3.8' "version" setting is deprecated in Docker
 
 services:
   backend:
@@ -32,7 +32,7 @@ services:
       - app-network
 
   db:
-    image: postgres:13
+    image: postgres:postgres:18.3-trixie  #postgres 13 not supported any more 18.3-trixie latest stable version
     container_name: postgres-db
     environment:
       - POSTGRES_DB=postgres

@@ -31,4 +31,3 @@ EXPOSE 8000
 
 # Run the application
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "backend.wsgi:application"]
->>>>>>> main

@@ -1,4 +1,4 @@
-#version: '3.8'
+version: '3.8'
 
 services:
   backend:
@@ -15,6 +15,11 @@ services:
       - DEBUG=False
       - SECRET_KEY=your-secret-key-here
       - ALLOWED_HOSTS=localhost,0.0.0.0,127.0.0.1
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - DB_HOST=db
+      - DB_PORT=5432
     depends_on:
       - db
     networks:
@@ -49,6 +54,13 @@ services:
       - "5433:5432"
     networks:
       - app-network
+    # Add health check for database readiness
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 volumes:
   postgres_data:
   static_volume:

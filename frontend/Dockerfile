@@ -19,6 +19,9 @@ RUN npm run build
 # Use Nginx to serve the static files
 FROM nginx:alpine
 
+# Set working directory for nginx
+WORKDIR /usr/share/nginx/html
+
 # Copy built React app to Nginx static directory
 COPY --from=builder /app/build /usr/share/nginx/html
 
@@ -28,6 +31,5 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 # Expose port
 EXPOSE 80
 
-# Start Nginx
-
+# Start Nginx with proper error handling
 CMD ["nginx", "-g", "daemon off;"]

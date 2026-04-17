@@ -1,7 +1,37 @@
 
 # Django + React Project
 
-This project combines a Django backend with a React frontend.
+This project combines a Django backend with a React frontend and uses PostgreSQL as the database.
+
+## Project Structure
+```
+groupProject/
+├── backend/          # Django backend
+│   ├── backend/     # Django project settings
+│   ├── frontend/    # Django app for serving React
+│   ├── manage.py
+│   └── requirements.txt
+└── frontend/        # React frontend
+    ├── public/
+    ├── src/
+    ├── package.json
+    └── ...
+```
+
+## Database Configuration
+
+This project now uses PostgreSQL as the database. The configuration is set up to work with Docker Compose, but for local development you can also configure it manually.
+
+### Environment Variables
+
+For production deployment or local development:
+- `POSTGRES_DB` - Database name (default: postgres)
+- `POSTGRES_USER` - Database user (default: postgres)
+- `POSTGRES_PASSWORD` - Database password (default: postgres)
+- `DB_HOST` - Database host (default: db for Docker, localhost for local)
+- `DB_PORT` - Database port (default: 5432)
+
+## Setup Instructions
 
 ## Project Structure
 ```
@@ -21,7 +51,7 @@ groupProject/
 ## Setup Instructions
 
 ### Prerequisites
-- Docker and Docker Compose installed
+- Docker and Docker Compose installed (recommended)
 - Python 3.14 (for local development)
 - Node.js 18 (for local development)
 
@@ -53,6 +83,14 @@ python manage.py runserver
 cd frontend
 npm install
 npm start
+```
+
+### Environment Variables
+
+For local development, create a `.env` file based on the provided `.env.example`:
+```bash
+cp .env.example .env
+# Edit .env with your specific settings
 ```
 
 ## Running the Project

@@ -1,110 +1,109 @@
+# Django + React + Docker Project
 
-# Django + React Project
-
-This project combines a Django backend with a React frontend and uses PostgreSQL as the database.
+A Dockerized full-stack application with a Django REST backend, Vite/React frontend, and PostgreSQL database.
 
 ## Project Structure
+
 ```
-groupProject/
-├── backend/          # Django backend
-│   ├── backend/     # Django project settings
-│   ├── frontend/    # Django app for serving React
+Group3TeamProject/
+├── backend/
+│   ├── apps/
+│   │   └── accounts/      # Accounts app
+│   ├── config/             # Django project settings
+│   │   ├── settings.py
+│   │   ├── urls.py
+│   │   └── wsgi.py
+│   ├── Dockerfile
 │   ├── manage.py
 │   └── requirements.txt
-└── frontend/        # React frontend
-    ├── public/
-    ├── src/
-    ├── package.json
-    └── ...
+├── frontend/
+│   ├── src/
+│   ├── public/
+│   ├── Dockerfile          # Multi-stage build (Node + Nginx)
+│   ├── nginx.conf
+│   ├── package.json
+│   └── vite.config.js
+├── docker-compose.dev.yml
+├── .env
+└── README.md
 ```
 
-## Database Configuration
+## Prerequisites
 
-This project now uses PostgreSQL as the database. The configuration is set up to work with Docker Compose, but for local development you can also configure it manually.
-
-### Environment Variables
-
-For production deployment or local development:
-- `POSTGRES_DB` - Database name (default: postgres)
-- `POSTGRES_USER` - Database user (default: postgres)
-- `POSTGRES_PASSWORD` - Database password (default: postgres)
-- `DB_HOST` - Database host (default: db for Docker, localhost for local)
-- `DB_PORT` - Database port (default: 5432)
+- Docker and Docker Compose
+- **Note:** A Python virtual environment (venv) is not needed. All backend dependencies run inside the Docker containers.
 
 ## Setup Instructions
 
-## Project Structure
-```
-groupProject/
-├── backend/          # Django backend
-│   ├── backend/     # Django project settings
-│   ├── frontend/    # Django app for serving React
-│   ├── manage.py
-│   └── requirements.txt
-└── frontend/        # React frontend
-    ├── public/
-    ├── src/
-    ├── package.json
-    └── ...
-```
+### 1. Clone and configure environment
 
-## Setup Instructions
-
-### Prerequisites
-- Docker and Docker Compose installed (recommended)
-- Python 3.14 (for local development)
-- Node.js 18 (for local development)
-
-### Development Mode with Docker (Recommended)
 ```bash
-# Start the entire application using Docker Compose
-docker-compose up --build
+git clone <repo-url>
+cd Group3TeamProject
 ```
 
-This will:
-1. Build both frontend and backend images
-2. Start PostgreSQL database
-3. Run Django backend on port 8001
-4. Serve React frontend on port 3000
+Copy `.env.example` to `.env` and update values as needed (or use the existing `.env`).
 
-### Local Development (Without Docker)
-#### Backend Setup
+### 2. Build and start all services
+
 ```bash
-cd backend
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -r requirements.txt
-python manage.py migrate
-python manage.py runserver
+docker compose up --build -d
 ```
 
-#### Frontend Setup
+### 3. Run database migrations
+
 ```bash
-cd frontend
-npm install
-npm start
+docker exec django-backend python manage.py migrate
 ```
 
-### Environment Variables
+### 4. Create a superuser (optional)
 
-For local development, create a `.env` file based on the provided `.env.example`:
 ```bash
-cp .env.example .env
-# Edit .env with your specific settings
+docker exec -it django-backend python manage.py createsuperuser
 ```
 
-## Running the Project
+## Services
 
-### Development Mode with Docker (Recommended)
-1. Run `docker-compose up --build`
-2. Access React frontend at `http://localhost:3000`
-3. Access Django backend API at `http://localhost:8001`
 
-### Production Mode
+| Service  | URL                                            | Description                  |
+| -------- | ---------------------------------------------- | ---------------------------- |
+| Frontend | [http://localhost:5173](http://localhost:5173) | Vite/React (served by Nginx) |
+| Backend  | [http://localhost:8000](http://localhost:8000) | Django REST API (Gunicorn)   |
+| Database | localhost:5432                                 | PostgreSQL 15                |
+
+
+## Common Commands
+
 ```bash
-# Build and run using Docker Compose for production
-docker-compose -f docker-compose.yml up --build
+# Start services
+docker compose -f docker-compose.dev.yml up -d
+
+# Stop services
+docker compose -f docker-compose.dev.yml down
+
+# View logs
+docker compose -f docker-compose.dev.yml logs -f
+
+# Run migrations
+docker exec django-backend python manage.py migrate
+
+# Make migrations
+docker exec django-backend python manage.py makemigrations
+
+# Access Django shell
+docker exec -it django-backend python manage.py shell
+
+# Install new frontend packages
+docker exec react-frontend npm install <package-name>
 ```
+
+## Tech Stack
+
+- **Frontend:** React 19, Vite, Nginx
+- **Backend:** Django 5.2, Django REST Framework, Gunicorn
+- **Database:** PostgreSQL 15
+- **Containerization:** Docker, Docker Compose
 
 ## API Endpoints
-The Django backend will serve the React frontend at the root URL and provide API endpoints at `/api/`.
+
+The Django backend provides Admin panel available at `/admin/`.

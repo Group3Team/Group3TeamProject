@@ -19,4 +19,3 @@ https://www.youtube.com/watch?v=oPQgFxHcjAw
 
 **Icons**
 https://fonts.google.com/icons?icon.set=Material+Symbols&icon.style=Sharp&icon.size=24&icon.color=%23e3e3e3&icon.platform=web
-

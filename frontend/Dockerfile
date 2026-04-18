@@ -12,7 +12,7 @@ ENV VITE_BASE_URL=$VITE_BASE_URL
 COPY package*.json ./
 
 # Install dependencies (including devDependencies for Vite build)
-RUN npm ci
+RUN npm install
 
 # Copy source code
 COPY . .
@@ -27,7 +27,7 @@ FROM nginx:alpine
 WORKDIR /usr/share/nginx/html
 
 # Copy built React app to Nginx static directory
-COPY --from=builder /app/build /usr/share/nginx/html
+COPY --from=builder /app/dist /usr/share/nginx/html
 
 # Copy Nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf

@@ -45,7 +45,7 @@ services:
       - app-network
 
   db:
-    image: postgres:18.3-trixie  #postgres 13 not supported any more 18.3-trixie latest stable version
+    image: postgis/postgis:16-3.4  # PostGIS-enabled postgres image required for PointField
     container_name: postgres-db
     environment:
       - POSTGRES_DB=postgres

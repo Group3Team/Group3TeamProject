@@ -8,11 +8,15 @@ ENV PYTHONDONTWRITEBYTECODE=1
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies including PostgreSQL client
+# Install system dependencies including PostgreSQL client and GDAL for PostGIS
 RUN apt-get update && apt-get install -y \
     gcc \
     libpq-dev \
     python3-dev \
+    binutils \
+    libproj-dev \
+    gdal-bin \
+    libgdal-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first for better caching
@@ -31,4 +35,4 @@ RUN python manage.py collectstatic --noinput || echo "Static collection skipped"
 EXPOSE 8000
 
 # Run the application
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "backend.wsgi:application"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "wsgi:application"]

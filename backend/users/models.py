@@ -7,6 +7,16 @@ class User(AbstractUser):
         ('WALKER', 'Walker'),
     )
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='OWNER')
+    groups = models.ManyToManyField(
+        'auth.Group',
+        related_name='custom_user_set',
+        blank=True,
+    )
+    user_permissions = models.ManyToManyField(
+        'auth.Permission',
+        related_name='custom_user_set',
+        blank=True,
+    )
 
 class WalkerProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='walker_profile')

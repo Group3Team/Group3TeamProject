@@ -19,9 +19,7 @@ from django.urls import path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-<<<<<<<< HEAD:backend/urls.py
     path('', index),
     path('api/', include('frontend.urls')),
-========
->>>>>>>> boilerplate:backend/config/urls.py
+
 ]

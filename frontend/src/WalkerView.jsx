@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -14,8 +15,9 @@ L.Marker.prototype.options.icon = DefaultIcon;
 
 export default function WalkerView() {
   const [isOnline, setIsOnline] = useState(false);
-  const [request, setRequest] = useState(null); // null, pending, accepted, in_progress
-  const position = [51.509, -0.08]; // Walker pos
+  const [request, setRequest] = useState(null);
+  const position = [51.509, -0.08];
+  const navigate = useNavigate();
 
   const toggleOnline = () => {
     if (!isOnline) {
@@ -33,6 +35,9 @@ export default function WalkerView() {
   return (
     <div className="grid-2 animate-fade-in">
       <div className="glass-panel">
+        <button className="btn btn-outline" onClick={() => navigate('/role')} style={{ marginBottom: '1.5rem', padding: '0.4rem 1rem', fontSize: '0.9rem' }}>
+          ← Back to Menu
+        </button>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
           <h2>Walker Dashboard</h2>
           <div className="status-badge" style={{ background: isOnline ? 'var(--success-color)' : 'var(--background-dark)', margin: 0 }}>

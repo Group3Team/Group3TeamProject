@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -14,9 +15,10 @@ let DefaultIcon = L.icon({
 L.Marker.prototype.options.icon = DefaultIcon;
 
 export default function OwnerView() {
-  const [step, setStep] = useState('request'); // request, searching, arriving, in_progress, completed
+  const [step, setStep] = useState('request');
   const [dogs, setDogs] = useState(1);
-  const position = [51.505, -0.09]; // Default London coords for demo
+  const position = [51.505, -0.09];
+  const navigate = useNavigate();
 
   const requestWalk = () => {
     setStep('searching');
@@ -28,6 +30,9 @@ export default function OwnerView() {
   return (
     <div className="grid-2 animate-fade-in">
       <div className="glass-panel">
+        <button className="btn btn-outline" onClick={() => navigate('/role')} style={{ marginBottom: '1.5rem', padding: '0.4rem 1rem', fontSize: '0.9rem' }}>
+          ← Back to Menu
+        </button>
         <h2>Request a Dog Walker</h2>
         
         {step === 'request' && (

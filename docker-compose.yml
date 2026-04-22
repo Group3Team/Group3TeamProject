@@ -13,11 +13,11 @@ services:
       - static_volume:/app/static
     environment:
       - DEBUG=False
-      - SECRET_KEY=your-secret-key-here
-      - ALLOWED_HOSTS=localhost,0.0.0.0,127.0.0.1
+      - SECRET_KEY=${DJANGO_SECRET_KEY}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - DB_HOST=db
       - DB_PORT=5432
     depends_on:
@@ -45,14 +45,14 @@ services:
       - app-network
 
   db:
-    image: postgis/postgis:16-3.4  # PostGIS-enabled postgres image required for PointField
+    image: postgis/postgis:18-3.6  # PostGIS-enabled postgres image required for PointField
     container_name: postgres-db
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql  # postgis/postgis:18-3.6 Uses VOLUME path /var/lib/postgresql
     ports:
       - "5433:5432"
     networks:

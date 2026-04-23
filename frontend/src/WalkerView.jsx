@@ -11,19 +11,7 @@ export default function WalkerView() {
   const [isOnline, setIsOnline] = useState(false);
   const [request, setRequest] = useState(null);
   const [walkerLocation, setWalkerLocation] = useState('')
-  const [routeInfo, setRouteInfo] = useState(() => {
-    const saved = sessionStorage.getItem("routeInfo");
-    return saved ? JSON.parse(saved) : null;
-  });
-
-  useEffect(() => {
-    if (routeInfo) {
-      sessionStorage.setItem("routeInfo", JSON.stringify(routeInfo));
-    } else {
-      sessionStorage.removeItem("routeInfo");
-    }
-  }, [routeInfo]);
-
+  const [routeInfo, setRouteInfo] = useState(null);
 
   const navigate = useNavigate();
 

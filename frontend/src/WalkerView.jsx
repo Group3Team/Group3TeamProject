@@ -10,7 +10,7 @@ import "leaflet.locatecontrol/dist/L.Control.Locate.min.css";
 export default function WalkerView() {
   const [isOnline, setIsOnline] = useState(false);
   const [request, setRequest] = useState(null);
-  const [, setWalkerLocation] = useState('')
+  const [, setWalkerLocation] = useState('');
   const [routeInfo, setRouteInfo] = useState(null);
 
   const navigate = useNavigate();

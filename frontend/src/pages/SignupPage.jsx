@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 
-export default function SignupPage() {
+export default function SignupPage({ onLogin }) {
   const [form, setForm] = useState({ name: '', email: '', password: '', confirm: '' });
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -12,6 +12,7 @@ export default function SignupPage() {
       setError('Passwords do not match');
       return;
     }
+    onLogin();
     navigate('/role');
   };
 

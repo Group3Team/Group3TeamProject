@@ -5,6 +5,7 @@ from .models import Dog, WalkRequest
 from .serializers import DogSerializer, WalkRequestSerializer
 
 class DogViewSet(viewsets.ModelViewSet):
+    queryset = Dog.objects.all()
     serializer_class = DogSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -17,6 +18,7 @@ class DogViewSet(viewsets.ModelViewSet):
 class WalkRequestViewSet(viewsets.ModelViewSet):
     serializer_class = WalkRequestSerializer
     permission_classes = [permissions.IsAuthenticated]
+    queryset = WalkRequest.objects.all()
 
     def get_queryset(self):
         return WalkRequest.objects.filter(

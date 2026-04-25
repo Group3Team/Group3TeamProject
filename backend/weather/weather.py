@@ -1,5 +1,4 @@
 import requests
-from datetime import datetime
 
 
 def get_hourly_weather_by_zip(zip_code):

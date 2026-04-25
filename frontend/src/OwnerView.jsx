@@ -40,7 +40,7 @@ export default function OwnerView() {
         duration_minutes: parseInt(duration),
       };
 
-      const response = await fetch('http://localhost:8001/api/walk-requests/', {
+      const response = await fetch('http://localhost:8001/api/walks/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

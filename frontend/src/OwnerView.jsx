@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -20,21 +20,42 @@ export default function OwnerView() {
   const [ownerPhone, setOwnerPhone] = useState('');
   const [ownerAddress, setOwnerAddress] = useState('');
   const [duration, setDuration] = useState(30);
+  const [activeRequestId, setActiveRequestId] = useState(null);
   const position = [51.505, -0.09];
   const navigate = useNavigate();
+
+  // Poll for status updates once a request is created
+  useEffect(() => {
+    let interval;
+    if (activeRequestId && step !== 'request' && step !== 'completed') {
+      const checkStatus = async () => {
+        try {
+          const response = await fetch(`http://localhost:8001/api/walks/${activeRequestId}/`);
+          const data = await response.json();
+          
+          if (data.status === 'ACCEPTED') setStep('arriving');
+          if (data.status === 'IN_PROGRESS') setStep('in_progress');
+          if (data.status === 'COMPLETED') setStep('completed');
+        } catch (error) {
+          console.error('Error checking walk status:', error);
+        }
+      };
+
+      checkStatus();
+      interval = setInterval(checkStatus, 3000);
+    }
+    return () => clearInterval(interval);
+  }, [activeRequestId, step]);
 
   const requestWalk = async () => {
     try {
       setStep('searching');
       
       const payload = {
-        owner: 1, // Defaulting to first user for demo
-        dogs: [], // In a real app, user would select dogs
+        owner: 1, 
+        dogs: [], 
         status: 'SEARCHING',
-        pickup_location: {
-          type: 'Point',
-          coordinates: [-0.09, 51.505]
-        },
+        pickup_location: 'POINT(-0.09 51.505)',
         owner_phone: ownerPhone,
         owner_address: ownerAddress,
         duration_minutes: parseInt(duration),
@@ -52,13 +73,30 @@ export default function OwnerView() {
         throw new Error('Failed to create walk request');
       }
 
-      setTimeout(() => {
-        setStep('arriving');
-      }, 3000);
+      const data = await response.json();
+      setActiveRequestId(data.id);
+      
+      // Removed simulations - the useEffect polling will now drive the state changes
     } catch (error) {
       console.error('Error requesting walk:', error);
       alert('Failed to request walk. Please ensure backend is running.');
       setStep('request');
+    }
+  };
+
+  const cancelRequest = async () => {
+    if (!activeRequestId) return;
+    try {
+      const response = await fetch(`http://localhost:8001/api/walks/${activeRequestId}/`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) throw new Error('Failed to cancel request');
+      
+      setStep('request');
+      setActiveRequestId(null);
+    } catch (error) {
+      console.error('Error canceling walk:', error);
+      alert('Failed to cancel request.');
     }
   };
 
@@ -132,6 +170,14 @@ export default function OwnerView() {
               <div style={{ width: '50%', height: '100%', background: 'var(--accent-color)', animation: 'slide 2s infinite linear' }} />
             </div>
             <style>{`@keyframes slide { 0% { transform: translateX(-100%); } 100% { transform: translateX(200%); } }`}</style>
+            
+            <button 
+              className="btn btn-outline" 
+              style={{ marginTop: '2rem', borderColor: '#d63031', color: '#d63031' }}
+              onClick={cancelRequest}
+            >
+              Cancel Request
+            </button>
           </div>
         )}
 

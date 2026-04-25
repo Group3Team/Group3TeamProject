@@ -5,6 +5,7 @@ import L from "leaflet";
 import "leaflet.locatecontrol";
 import "leaflet.locatecontrol/dist/L.Control.Locate.min.js";
 import "leaflet.locatecontrol/dist/L.Control.Locate.min.css";
+import Weather from "./components/Weather";
 
 
 export default function WalkerView() {
@@ -44,6 +45,33 @@ export default function WalkerView() {
     }
     return () => clearInterval(interval);
   }, [isOnline, request]);
+
+  const updateRequestStatus = async (newStatus) => {
+    if (!activeRequestData) return;
+    try {
+      const response = await fetch(`http://localhost:8001/api/walks/${activeRequestData.id}/`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      if (!response.ok) throw new Error('Failed to update status');
+      
+      const updatedData = await response.json();
+      setActiveRequestData(updatedData);
+      
+      if (newStatus === 'ACCEPTED') setRequest('accepted');
+      if (newStatus === 'IN_PROGRESS') setRequest('in_progress');
+      if (newStatus === 'COMPLETED') {
+        setRequest(null);
+        setActiveRequestData(null);
+      }
+    } catch (error) {
+      console.error('Error updating status:', error);
+      alert('Failed to update walk status.');
+    }
+  };
 
   useEffect(() => {
     if (mapInstanceRef.current) return;
@@ -154,6 +182,9 @@ export default function WalkerView() {
         >
           ← Back to Menu
         </button>
+
+        <Weather />
+
         <div
           style={{
             display: "flex",
@@ -226,7 +257,7 @@ export default function WalkerView() {
                 className="btn"
                 style={{ flex: 1, background: "var(--success-color)" }}
                 onClick={() => {
-                  setRequest("accepted");
+                  updateRequestStatus('ACCEPTED');
                   getRoute("-111.739,40.3805", "-111.7534,40.3661");
                 }}
               >
@@ -255,7 +286,7 @@ export default function WalkerView() {
             <button
               className="btn"
               style={{ width: "100%", marginBottom: "1rem" }}
-              onClick={() => setRequest("in_progress")}
+              onClick={() => updateRequestStatus('IN_PROGRESS')}
             >
               Start Walk
             </button>
@@ -284,7 +315,7 @@ export default function WalkerView() {
               <button
                 className="btn"
                 style={{ width: "100%" }}
-                onClick={() => setRequest(null)}
+                onClick={() => updateRequestStatus('COMPLETED')}
               >
                 Complete Walk
               </button>

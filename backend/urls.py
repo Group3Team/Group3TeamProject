@@ -1,22 +1,22 @@
-"""
-URL configuration for backend project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/6.0/topics/http/urls/
-"""
-from django.contrib import admin
+# backend/urls.py
 from django.urls import path, include
+from django.contrib import admin
 from rest_framework.routers import DefaultRouter
 from users.views import UserViewSet, WalkerProfileViewSet, OwnerProfileViewSet
-from walks.views import WalkRequestViewSet
+from walks.views import DogViewSet, WalkRequestViewSet
+from messaging.views import MessageViewSet
 
 router = DefaultRouter()
 router.register(r'users', UserViewSet)
-router.register(r'walkers', WalkerProfileViewSet)
-router.register(r'owners', OwnerProfileViewSet)
-router.register(r'walks', WalkRequestViewSet)
+router.register(r'walker-profiles', WalkerProfileViewSet)
+router.register(r'owner-profiles', OwnerProfileViewSet)
+router.register(r'walk-requests', WalkRequestViewSet) # Matches frontend
+router.register(r'dogs', DogViewSet)                  # Matches frontend
+router.register(r'messages', MessageViewSet)          # Moved to root for simplicity, or keep under /messaging/ and update frontend
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
+    path('api/weather-note/', include('weather.urls')),
+    path('api/messages/', include('messaging.urls')),
 ]

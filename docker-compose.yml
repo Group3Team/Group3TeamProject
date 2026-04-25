@@ -12,8 +12,9 @@ services:
       - ./backend:/app
       - static_volume:/app/static
     environment:
-      - DEBUG=False
+      - DEBUG=True
       - SECRET_KEY=${DJANGO_SECRET_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS}
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
@@ -24,6 +25,7 @@ services:
       - db
     networks:
       - app-network
+    command: ["gunicorn", "--bind", "0.0.0.0:8000", "--access-logfile", "-", "wsgi:application"]
     restart: unless-stopped
     logging:
       driver: "json-file"
@@ -45,7 +47,9 @@ services:
       - app-network
 
   db:
-    image: postgis/postgis:18-3.6  # PostGIS-enabled postgres image required for PointField
+    image: imresamu/postgis:18-3.6 # arm support, so works on my mac. 
+    # image: postgis/postgis:18-3.6  # PostGIS-enabled postgres image required for PointField
+    # platform: linux/amd64 #
     container_name: postgres-db
     environment:
       - POSTGRES_DB=postgres

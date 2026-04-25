@@ -35,6 +35,6 @@ fi
 
 echo "------------------------------------------------"
 echo "[SUCCESS] "
-echo "To start, run: source venv/bin/activate
+echo "To start, run: source venv/bin/activate"
 echo "------------------------------------------------"
 

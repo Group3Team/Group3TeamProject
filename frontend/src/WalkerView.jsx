@@ -9,7 +9,8 @@ import "leaflet.locatecontrol/dist/L.Control.Locate.min.css";
 
 export default function WalkerView() {
   const [isOnline, setIsOnline] = useState(false);
-  const [request, setRequest] = useState(null);
+  const [request, setRequest] = useState(null); // 'pending', 'accepted', 'in_progress'
+  const [activeRequestData, setActiveRequestData] = useState(null);
   const [, setWalkerLocation] = useState('');
   const [routeInfo, setRouteInfo] = useState(null);
 
@@ -17,6 +18,60 @@ export default function WalkerView() {
 
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
+
+  // Poll for new requests when online
+  useEffect(() => {
+    let interval;
+    if (isOnline && !request) {
+      const fetchRequests = async () => {
+        try {
+          const response = await fetch('http://localhost:8001/api/walks/');
+          const data = await response.json();
+          // Find the most recent 'SEARCHING' request
+          const pending = data.filter(r => r.status === 'SEARCHING').sort((a, b) => b.id - a.id)[0];
+          
+          if (pending) {
+            setActiveRequestData(pending);
+            setRequest('pending');
+          }
+        } catch (error) {
+          console.error('Error fetching requests:', error);
+        }
+      };
+
+      fetchRequests(); // Initial fetch
+      interval = setInterval(fetchRequests, 5000); // Poll every 5 seconds
+    }
+    return () => clearInterval(interval);
+  }, [isOnline, request]);
+
+  const updateRequestStatus = async (newStatus) => {
+    if (!activeRequestData) return;
+    try {
+      const response = await fetch(`http://localhost:8001/api/walks/${activeRequestData.id}/`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      if (!response.ok) throw new Error('Failed to update status');
+      
+      const updatedData = await response.json();
+      setActiveRequestData(updatedData);
+      
+      if (newStatus === 'ACCEPTED') setRequest('accepted');
+      if (newStatus === 'IN_PROGRESS') setRequest('in_progress');
+      if (newStatus === 'COMPLETED') {
+        setRequest(null);
+        setActiveRequestData(null);
+      }
+    } catch (error) {
+      console.error('Error updating status:', error);
+      alert('Failed to update walk status.');
+    }
+  };
+
   useEffect(() => {
     if (mapInstanceRef.current) return;
 
@@ -105,13 +160,10 @@ export default function WalkerView() {
   const toggleOnline = () => {
     if (!isOnline) {
       setIsOnline(true);
-      // Simulate incoming request after 3 seconds
-      setTimeout(() => {
-        setRequest("pending");
-      }, 3000);
     } else {
       setIsOnline(false);
       setRequest(null);
+      setActiveRequestData(null);
     }
   };
 
@@ -175,7 +227,7 @@ export default function WalkerView() {
           </div>
         )}
 
-        {request === "pending" && (
+        {request === "pending" && activeRequestData && (
           <div
             className="glass-panel"
             style={{
@@ -185,20 +237,23 @@ export default function WalkerView() {
           >
             <h3>New Walk Request!</h3>
             <p>
-              <strong>Distance:</strong> 1.2 miles away
+              <strong>Pickup Address:</strong> {activeRequestData.owner_address || 'Not provided'}
             </p>
             <p>
-              <strong>Dogs:</strong> 2 (Medium, Large)
+              <strong>Phone:</strong> {activeRequestData.owner_phone || 'Not provided'}
             </p>
             <p>
-              <strong>Earnings:</strong> $25.00
+              <strong>Duration:</strong> {activeRequestData.duration_minutes || '30'} mins
+            </p>
+            <p>
+              <strong>Status:</strong> {activeRequestData.status}
             </p>
             <div style={{ display: "flex", gap: "1rem", marginTop: "1.5rem" }}>
               <button
                 className="btn"
                 style={{ flex: 1, background: "var(--success-color)" }}
                 onClick={() => {
-                  setRequest("accepted");
+                  updateRequestStatus('ACCEPTED');
                   getRoute("-111.739,40.3805", "-111.7534,40.3661");
                 }}
               >
@@ -207,7 +262,10 @@ export default function WalkerView() {
               <button
                 className="btn"
                 style={{ flex: 1, background: "#d63031" }}
-                onClick={() => setRequest(null)}
+                onClick={() => {
+                  setRequest(null);
+                  setActiveRequestData(null);
+                }}
               >
                 Decline
               </button>
@@ -224,7 +282,7 @@ export default function WalkerView() {
             <button
               className="btn"
               style={{ width: "100%", marginBottom: "1rem" }}
-              onClick={() => setRequest("in_progress")}
+              onClick={() => updateRequestStatus('IN_PROGRESS')}
             >
               Start Walk
             </button>
@@ -253,7 +311,7 @@ export default function WalkerView() {
               <button
                 className="btn"
                 style={{ width: "100%" }}
-                onClick={() => setRequest(null)}
+                onClick={() => updateRequestStatus('COMPLETED')}
               >
                 Complete Walk
               </button>

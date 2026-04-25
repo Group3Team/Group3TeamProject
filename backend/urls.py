@@ -19,4 +19,6 @@ router.register(r'walks', WalkRequestViewSet)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
+    path('api/weather-note/', include('weather.urls')),
+    path('api/messages/', include('messaging.urls')),
 ]

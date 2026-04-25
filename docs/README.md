@@ -67,7 +67,7 @@ docker exec -it django-backend python manage.py createsuperuser
 
 | Service  | URL                                            | Description                  |
 | -------- | ---------------------------------------------- | ---------------------------- |
-| Frontend | [http://localhost:5173](http://localhost:5173) | Vite/React (served by Nginx) |
+| Frontend | [http://localhost:5173](http://localhost:3000) | Vite/React (served by Nginx) |
 | Backend  | [http://localhost:8000](http://localhost:8000) | Django REST API (Gunicorn)   |
 | Database | localhost:5432                                 | PostgreSQL 15                |
 

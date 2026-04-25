@@ -55,10 +55,7 @@ export default function OwnerView() {
         owner: 1, 
         dogs: [], 
         status: 'SEARCHING',
-        pickup_location: {
-          type: 'Point',
-          coordinates: [-0.09, 51.505]
-        },
+        pickup_location: 'POINT(-0.09 51.505)',
         owner_phone: ownerPhone,
         owner_address: ownerAddress,
         duration_minutes: parseInt(duration),

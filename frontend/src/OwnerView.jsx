@@ -87,6 +87,22 @@ export default function OwnerView() {
     }
   };
 
+  const cancelRequest = async () => {
+    if (!activeRequestId) return;
+    try {
+      const response = await fetch(`http://localhost:8001/api/walks/${activeRequestId}/`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) throw new Error('Failed to cancel request');
+      
+      setStep('request');
+      setActiveRequestId(null);
+    } catch (error) {
+      console.error('Error canceling walk:', error);
+      alert('Failed to cancel request.');
+    }
+  };
+
   return (
     <div className="grid-2 animate-fade-in">
       <div className="glass-panel">
@@ -157,6 +173,14 @@ export default function OwnerView() {
               <div style={{ width: '50%', height: '100%', background: 'var(--accent-color)', animation: 'slide 2s infinite linear' }} />
             </div>
             <style>{`@keyframes slide { 0% { transform: translateX(-100%); } 100% { transform: translateX(200%); } }`}</style>
+            
+            <button 
+              className="btn btn-outline" 
+              style={{ marginTop: '2rem', borderColor: '#d63031', color: '#d63031' }}
+              onClick={cancelRequest}
+            >
+              Cancel Request
+            </button>
           </div>
         )}
 

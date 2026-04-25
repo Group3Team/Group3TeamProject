@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -20,16 +20,40 @@ export default function OwnerView() {
   const [ownerPhone, setOwnerPhone] = useState('');
   const [ownerAddress, setOwnerAddress] = useState('');
   const [duration, setDuration] = useState(30);
+  const [activeRequestId, setActiveRequestId] = useState(null);
   const position = [51.505, -0.09];
   const navigate = useNavigate();
+
+  // Poll for status updates once a request is created
+  useEffect(() => {
+    let interval;
+    if (activeRequestId && step !== 'request' && step !== 'completed') {
+      const checkStatus = async () => {
+        try {
+          const response = await fetch(`http://localhost:8001/api/walks/${activeRequestId}/`);
+          const data = await response.json();
+          
+          if (data.status === 'ACCEPTED') setStep('arriving');
+          if (data.status === 'IN_PROGRESS') setStep('in_progress');
+          if (data.status === 'COMPLETED') setStep('completed');
+        } catch (error) {
+          console.error('Error checking walk status:', error);
+        }
+      };
+
+      checkStatus();
+      interval = setInterval(checkStatus, 3000);
+    }
+    return () => clearInterval(interval);
+  }, [activeRequestId, step]);
 
   const requestWalk = async () => {
     try {
       setStep('searching');
       
       const payload = {
-        owner: 1, // Defaulting to first user for demo
-        dogs: [], // In a real app, user would select dogs
+        owner: 1, 
+        dogs: [], 
         status: 'SEARCHING',
         pickup_location: {
           type: 'Point',
@@ -40,7 +64,7 @@ export default function OwnerView() {
         duration_minutes: parseInt(duration),
       };
 
-      const response = await fetch('http://localhost:8001/api/walk-requests/', {
+      const response = await fetch('http://localhost:8001/api/walks/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -52,9 +76,10 @@ export default function OwnerView() {
         throw new Error('Failed to create walk request');
       }
 
-      setTimeout(() => {
-        setStep('arriving');
-      }, 3000);
+      const data = await response.json();
+      setActiveRequestId(data.id);
+      
+      // Removed simulations - the useEffect polling will now drive the state changes
     } catch (error) {
       console.error('Error requesting walk:', error);
       alert('Failed to request walk. Please ensure backend is running.');

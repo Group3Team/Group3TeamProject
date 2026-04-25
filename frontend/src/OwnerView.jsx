@@ -17,14 +17,49 @@ L.Marker.prototype.options.icon = DefaultIcon;
 export default function OwnerView() {
   const [step, setStep] = useState('request');
   const [dogs, setDogs] = useState(1);
+  const [ownerPhone, setOwnerPhone] = useState('');
+  const [ownerAddress, setOwnerAddress] = useState('');
+  const [duration, setDuration] = useState(30);
   const position = [51.505, -0.09];
   const navigate = useNavigate();
 
-  const requestWalk = () => {
-    setStep('searching');
-    setTimeout(() => {
-      setStep('arriving');
-    }, 3000);
+  const requestWalk = async () => {
+    try {
+      setStep('searching');
+      
+      const payload = {
+        owner: 1, // Defaulting to first user for demo
+        dogs: [], // In a real app, user would select dogs
+        status: 'SEARCHING',
+        pickup_location: {
+          type: 'Point',
+          coordinates: [-0.09, 51.505]
+        },
+        owner_phone: ownerPhone,
+        owner_address: ownerAddress,
+        duration_minutes: parseInt(duration),
+      };
+
+      const response = await fetch('http://localhost:8001/api/walk-requests/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create walk request');
+      }
+
+      setTimeout(() => {
+        setStep('arriving');
+      }, 3000);
+    } catch (error) {
+      console.error('Error requesting walk:', error);
+      alert('Failed to request walk. Please ensure backend is running.');
+      setStep('request');
+    }
   };
 
   return (
@@ -38,6 +73,40 @@ export default function OwnerView() {
         {step === 'request' && (
           <div>
             <div style={{ marginBottom: '1rem' }}>
+              <label style={{ display: 'block', marginBottom: '0.5rem' }}>Owner Phone Number</label>
+              <input 
+                type="text" 
+                className="input-field" 
+                placeholder="e.g., 555-0123"
+                value={ownerPhone} 
+                onChange={(e) => setOwnerPhone(e.target.value)} 
+              />
+            </div>
+
+            <div style={{ marginBottom: '1rem' }}>
+              <label style={{ display: 'block', marginBottom: '0.5rem' }}>Pickup Address</label>
+              <input 
+                type="text" 
+                className="input-field" 
+                placeholder="123 Bark St, Woof City"
+                value={ownerAddress} 
+                onChange={(e) => setOwnerAddress(e.target.value)} 
+              />
+            </div>
+
+            <div style={{ marginBottom: '1rem' }}>
+              <label style={{ display: 'block', marginBottom: '0.5rem' }}>Walk Duration (minutes)</label>
+              <input 
+                type="number" 
+                className="input-field" 
+                value={duration} 
+                onChange={(e) => setDuration(e.target.value)} 
+                min="15" 
+                step="15"
+              />
+            </div>
+
+            <div style={{ marginBottom: '1rem' }}>
               <label style={{ display: 'block', marginBottom: '0.5rem' }}>Number of Dogs</label>
               <input 
                 type="number" 
@@ -47,16 +116,6 @@ export default function OwnerView() {
                 min="1" 
                 max="5"
               />
-            </div>
-            
-            <div style={{ marginBottom: '1rem' }}>
-              <label style={{ display: 'block', marginBottom: '0.5rem' }}>Dog Size Preferences</label>
-              <select className="input-field">
-                <option>Any Size</option>
-                <option>Small</option>
-                <option>Medium</option>
-                <option>Large</option>
-              </select>
             </div>
             
             <button className="btn" style={{ width: '100%', marginTop: '1rem' }} onClick={requestWalk}>

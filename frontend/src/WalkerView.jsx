@@ -5,6 +5,7 @@ import L from "leaflet";
 import "leaflet.locatecontrol";
 import "leaflet.locatecontrol/dist/L.Control.Locate.min.js";
 import "leaflet.locatecontrol/dist/L.Control.Locate.min.css";
+import Weather from "./components/Weather";
 
 
 export default function WalkerView() {
@@ -129,6 +130,9 @@ export default function WalkerView() {
         >
           ← Back to Menu
         </button>
+
+        <Weather />
+
         <div
           style={{
             display: "flex",

@@ -55,10 +55,7 @@ export default function OwnerView() {
         owner: 1, 
         dogs: [], 
         status: 'SEARCHING',
-        pickup_location: {
-          type: 'Point',
-          coordinates: [-0.09, 51.505]
-        },
+        pickup_location: 'POINT(-0.09 51.505)',
         owner_phone: ownerPhone,
         owner_address: ownerAddress,
         duration_minutes: parseInt(duration),
@@ -84,6 +81,22 @@ export default function OwnerView() {
       console.error('Error requesting walk:', error);
       alert('Failed to request walk. Please ensure backend is running.');
       setStep('request');
+    }
+  };
+
+  const cancelRequest = async () => {
+    if (!activeRequestId) return;
+    try {
+      const response = await fetch(`http://localhost:8001/api/walks/${activeRequestId}/`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) throw new Error('Failed to cancel request');
+      
+      setStep('request');
+      setActiveRequestId(null);
+    } catch (error) {
+      console.error('Error canceling walk:', error);
+      alert('Failed to cancel request.');
     }
   };
 
@@ -157,6 +170,14 @@ export default function OwnerView() {
               <div style={{ width: '50%', height: '100%', background: 'var(--accent-color)', animation: 'slide 2s infinite linear' }} />
             </div>
             <style>{`@keyframes slide { 0% { transform: translateX(-100%); } 100% { transform: translateX(200%); } }`}</style>
+            
+            <button 
+              className="btn btn-outline" 
+              style={{ marginTop: '2rem', borderColor: '#d63031', color: '#d63031' }}
+              onClick={cancelRequest}
+            >
+              Cancel Request
+            </button>
           </div>
         )}
 

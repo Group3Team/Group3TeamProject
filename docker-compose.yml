@@ -12,7 +12,7 @@ services:
       - ./backend:/app
       - static_volume:/app/static
     environment:
-      - DEBUG=False
+      - DEBUG=True
       - SECRET_KEY=${DJANGO_SECRET_KEY}
       - GEMINI_API_KEY=${GEMINI_API_KEY}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS}
@@ -25,6 +25,7 @@ services:
       - db
     networks:
       - app-network
+    command: ["gunicorn", "--bind", "0.0.0.0:8000", "--access-logfile", "-", "wsgi:application"]
     restart: unless-stopped
     logging:
       driver: "json-file"

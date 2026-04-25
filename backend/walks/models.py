@@ -19,7 +19,7 @@ class WalkRequest(models.Model):
     )
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='walk_requests_as_owner')
     walker = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='walk_requests_as_walker')
-    dogs = models.ManyToManyField(Dog)
+    dogs = models.ManyToManyField(Dog, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='SEARCHING')
     pickup_location = models.PointField()
     owner_phone = models.CharField(max_length=20, blank=True, null=True)

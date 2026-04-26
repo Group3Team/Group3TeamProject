@@ -3,14 +3,14 @@
 services:
   backend:
     build:
-      context: .
-      dockerfile: backend/Dockerfile
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: django-backend
     ports:
       - "8001:8000"
     volumes:
-      - ./backend:/app
-      - static_volume:/app/static
+      - ./backend:/app/backend
+      - static_volume:/app/backend/static
     environment:
       - DEBUG=True
       - SECRET_KEY=${DJANGO_SECRET_KEY}

@@ -27,10 +27,10 @@ pip install --upgrade pip
 
 # Check if requirements.txt exists before installing
 if [ -f "requirements.txt" ]; then
-    pip install -r requirements.txt
+    pip install -r backend/requirements.txt
 else
     echo "[!] No requirements.txt found."
-    # pip install pytest
+    
 fi
 
 echo "------------------------------------------------"

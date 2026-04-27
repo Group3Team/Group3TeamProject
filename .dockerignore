@@ -1,37 +1,174 @@
-# Python
+# ==========================================
+# UNIFIED .dockerignore
+# Combined: Build Context, Python, Frontend, IDE, Secrets
+# ==========================================
+
+# 🐙 Git & CI/CD
+.git/
+.gitignore
+.gitattributes
+.github/
+.gitlab-ci.yml
+.codeclimate.yml
+.travis.yml
+.taskcluster.yml
+
+# 🐳 Docker & Build Context
+.docker/
+.dockerignore
+Dockerfile
+Dockerfile*
+docker-compose*.yml
+docker-compose*.yml~
+Dockerfile~
+
+# 🐍 Python Bytecode & Compiled
 __pycache__/
 *.py[cod]
-venv/
-.env
-*.pem
-*.key
+*.pyc
+*.pyo
+*.pyd
+$py.class
 
-# Django
+# 📦 Virtual Environments
+env/
+.venv/
+venv/
+ENV/
+venv.bak/
+env.bak/
+.pipenv/
+.local/share/virtualenvs/
+
+# 📦 Python Distribution & Packaging
+.Python
+build/
+dist/
+downloads/
+eggs/
+.eggs/
+*.egg-info/
+*.egg
+.installed.cfg
+MANIFEST
+sdist/
+var/
+lib/
+lib64/
+parts/
+wheels/
+share/python-wheels/
+*.manifest
+*.spec
+
+# 🐍 Package Managers & Caches
+node_modules/
+.npm
+.eslintcache
+.stylelintcache
+pip-log.txt
+pip-delete-this-directory.txt
+.cache/
+*.cache
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.tox/
+.nox/
+.hypothesis/
+store_cache.json
+.ropeproject/
+**/.ropeproject
+
+# 🧪 Testing & Coverage
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+nosetests.xml
+coverage/
+test/
+tests/
+
+# 📚 Docs, Scripts & Metadata
+docs/
+docs/_build/
+scripts/
+*.md
+CHANGELOG*
+LICENSE*
+TODO_List.md
+
+# 🌐 Django, Flask & Web Frameworks
+local_settings.py
 *.sqlite3
+*.sqlite3-journal
+db.sqlite3
+db.sqlite3-journal
 static/
 media/
 staticfiles/
-
-# IDE
-.idea/
-.vscode/
-*.iml
-
-# Git
-.git/
-
-# Docker
-docker-compose*.yml
-Dockerfile*
-
-# Logs
-logs/
+instance/
+.webassets-cache
 *.log
+logs/
+log/
+*.mo
+*.pot
 
-# Testing
-.pytest_cache/
-coverage/
+# 💻 IDE & Editors
+.idea/
+*.iml
+.vscode/
+*.code-workspace
+.history/
+*.swp
+*.swo
+*~
 
-# OS
+# 🍎🪟 Operating System Files
 .DS_Store
+.DS_Store?
+._*
 Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# 🗃️ Temporary & Scratch Files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# 🔐 Secrets, Keys & Credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+*.cer
+*.p12
+*.pfx
+google_service_account_key.json
+./secrets/*
+.aws/credentials
+aws-credentials.txt
+*.aws
+id_rsa*
+id_ed25519*
+*.ppk
+/etc/letsencrypt/
+ssl/
+certificates/
+.streamlit/secrets.toml
+
+# 📦 Other Frameworks & Tools
+.spyderproject
+.spyproject
+.pyre/
+.pytype/
+cython_debug/
+.abstra/
+marimo/

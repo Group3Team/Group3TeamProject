@@ -54,7 +54,7 @@ function AppContent() {
               </div>
             </div>
             <div className="hero-image-container">
-              <img src="/hero.png" alt="Happy dog being walked" className="hero-image" />
+              <img src="/hero.png" alt="Guillermo Trigger!" className="hero-image" />
             </div>
           </div>
         } />

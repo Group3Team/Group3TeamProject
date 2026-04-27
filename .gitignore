@@ -1,37 +1,14 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
+# ==========================================
+# UNIFIED .gitignore
+# Combined: Visual Studio, Python, Custom Project
+# ==========================================
 
-node_modules
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-.kilo
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-# ===========================================
-# ENVIRONMENT & SECRETS (CRITICAL)
-# ===========================================
+# 📁 ENVIRONMENT & SECRETS (CRITICAL)
 .env
-.env.local
-.env.development
-.env.production
-.env.test
-.env*.local
+.env.*
+!.env.example
+*.env
+*.local
 backend/.env
 frontend/.env
 *.pem
@@ -40,227 +17,309 @@ frontend/.env
 *.cer
 *.p12
 *.pfx
-*.pem
 google_service_account_key.json
-
-# Prevents Docker Secrets uploads to repo
 ./secrets/*
-
-# AWS Credentials
 .aws/credentials
 aws-credentials.txt
 *.aws
+.streamlit/secrets.toml
 
-# ===========================================
-# PYTHON / DJANGO BACKEND
-# ===========================================
-# Byte-compiled / optimized / DLL files
+# 💻 IDEs & EDITORS
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+.idea/
+*.iml
+*.code-workspace
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
+*.opt
+*.dsw
+*.dsp
+*.vbw
+*.ncb
+*.aps
+*.opendb
+*.opensdf
+*.sdf
+*.cachefile
+*.VC.db
+*.VC.VC.opendb
+*.rptproj.rsuser
+*.GhostDoc.xml
+*.tss
+*.jmconfig
+*.nvuser
+**/.mfractor/
+**/.localhistory/
+.vshistory/
+**/.ionide/
+**/.cr/personal
+.spyderproject
+.spyproject
+.ropeproject
+tempCodeRunnerFile.py
+.emacs.desktop
+.emacs.desktop.lock
+
+# 🖥️ OPERATING SYSTEM
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+.kilo
+*~
+~$*
+
+# 🐍 PYTHON / DJANGO BACKEND
 __pycache__/
+pycache/
 *.py[cod]
 *$py.class
-*.pyo
-*.pyd
 .Python
-
-# Virtual environments
-venv/
-env/
-.venv/
-ENV/
-
-# Django specific
 db.sqlite3
 db.sqlite3-journal
+*.sqlite3
 local_settings.py
 *.pot
-*.pyc
+*.mo
+.abstra/
+marimo/_static/
+marimo/_lsp/
+marimo/
+celerybeat-schedule*
+celerybeat.pid
+*.rdb
+*.aof
+*.pid
+mnesia/
+rabbitmq/
+rabbitmq-data/
+activemq-data/
+*.sage.py
+/site
+FakesAssemblies/
 
-# Testing
-.pytest_cache/
-.tox/
-.nox/
-htmlcov/
-.coverage
-coverage/
-*.cover
-.hypothesis/
-store_cache.json
-TODO_List.md
-
-# Type checking
-.mypy_cache/
-.pytype/
-
-# Distribution / packaging
-*.manifest
-*.spec
-pip-log.txt
-pip-delete-this-directory.txt
-
-# ===========================================
-# REACT / VITE FRONTEND
-# ===========================================
-# Dependencies
+# ⚛️ NODE.JS / REACT / VITE FRONTEND
 node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
 .npm
 .eslintcache
 .stylelintcache
-
-# Build output
 frontend/dist/
 frontend/build/
 dist/
+dist-ssr
 build/
-
-# Vite specific
 frontend/.vite/
 .vite/
 
-# Frontend environment files
-frontend/.env.local
-frontend/.env.development.local
-frontend/.env.production.local
-frontend/.env.test.local
+# 📦 BUILD OUTPUTS & ARTIFACTS
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+*/[Bb]in/
+*/[Oo]bj/
+[Oo]ut/
+bld/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+[Aa][Rr][Mm]64[Ee][Cc]/
+*.ilk
+*.meta
+*.obj
+*.idb
+*.iobj
+*.pch
+*.pdb
+*.ipdb
+*.pgc
+*.pgd
+*.rsp
+!Directory.Build.rsp
+*.sbr
+*.tlb
+*.tli
+*.tlh
+*.tmp_proj
+*_wpftmp.csproj
+*.tlog
+*.vspscc
+*.vssscc
+.builds
+*.pidb
+*.svclog
+*.scc
+ipch/
+*.psess
+*.vsp
+*.vspx
+*.sap
+*.e2e
+*.binlog
+MSBuild_Logs/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+csx/
+*.build.csdef
+ecf/
+rcf/
+AppPackages/
+BundleArtifacts/
+Package.StoreAssociation.xml
+_pkginfo.txt
+*.appx
+*.appxbundle
+*.appxupload
+*.btp.cs
+*.btm.cs
+*.odx.cs
+*.xsd.cs
+ASALocalRun/
+.aws-sam
+healthchecksdb
+MigrationBackup/
+FodyWeavers.xsd
+*.vsix
+Generated\ Files/
+mono_crash.*
 
-# ===========================================
-# DOCKER
-# ===========================================
-# Docker build cache
+# 🐳 DOCKER & CONTAINERS
 .docker/
-
-# Docker Compose overrides
 docker-compose.override.yml
 docker-compose.yml~
 Dockerfile~
-
-# Docker volumes (persistent data)
 postgres_data/
 pgdata/
 docker-volumes/
 
-# ===========================================
-# DATABASE
-# ===========================================
-# PostgreSQL dumps & backups
+# 🗄️ DATABASE & BACKUPS
 *.sql
 *.dump
 *.bak
 backups/
 dumps/
 
-# SQLite (if used for development)
-*.sqlite3
-*.sqlite3-journal
+# 🧪 TESTING, COVERAGE & LINTING
+.pytest_cache/
+.tox/
+.nox/
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+coverage*.json
+coverage*.info
+*.cover
+*.py.cover
+*.lcov
+.hypothesis/
+store_cache.json
+nosetests.xml
+*.trx
+TestResult.xml
+nunit-*.xml
+.received.
+BenchmarkDotNet.Artifacts/
+NCrunch*
+.NCrunch_*
+.crunch.local.xml
+nCrunchTemp_*
+.mm.
+AutoTest.Net/
+OpenCover/
+Chutzpah*
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+cython_debug/
+.ruff_cache/
 
-# ===========================================
-# IDE & EDITORS
-# ===========================================
-# JetBrains / PyCharm
-.idea/
-*.iml
-*.swp
-*.swo
-*~
-
-# VS Code
-.vscode/
-*.code-workspace
-
-# Emacs
-*~
-\#*\#
-/.emacs.desktop
-/.emacs.desktop.lock
-
-# ===========================================
-# OPERATING SYSTEM
-# ===========================================
-# macOS
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-
-# Windows
-ehthumbs.db
-Thumbs.db
-Desktop.ini
-
-# Linux
-*~
-
-# ===========================================
-# LOGS
-# ===========================================
+# 📝 LOGS & DEBUG
 logs/
 log/
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+pip-log.txt
+pip-delete-this-directory.txt
 
-# ===========================================
-# STATIC & MEDIA FILES (Django)
-# ===========================================
-static/
-media/
-staticfiles/
+# 📦 PACKAGE MANAGERS & VIRTUAL ENVIRONMENTS
+venv/
+.venv/
+env/
+ENV/
+venv.bak/
+env.bak/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+pypackages/
+*.manifest
+*.spec
+Pipfile.lock
+uv.lock
+poetry.lock
+poetry.toml
+pdm.lock
+pdm.toml
+.pdm-python
+.pdm-build/
+pixi.lock
+.pixi/*
+!.pixi/config.toml
+*.nupkg
+*.snupkg
+*/[Pp]ackages/
+!**/[Pp]ackages/build/
+*.nuget.props
+*.nuget.targets
 
-# ===========================================
-# DEPLOYMENT & SERVER
-# ===========================================
-# SSL certificates
-/etc/letsencrypt/
-ssl/
-certificates/
-
-# Deployment scripts with secrets
-deploy.sh
-*.sh.bak
-server-config/
-
-# SSH keys
-id_rsa
-id_rsa.pub
-id_ed25519
-id_ed25519.pub
-*.ppk
-
-# ===========================================
-# GIT & CI/CD
-# ===========================================
-# Git files (DO NOT IGNORE .gitignore itself!)
-.git/
-.gitignore~
-
-# GitHub Actions
-.github/workflows/*.yml~
-
-# GitLab CI
-.gitlab-ci.yml~
-
-# ===========================================
-# JUPYTER & NOTEBOOKS
-# ===========================================
-*.ipynb_checkpoints/
-.ipynb_checkpoints/
-
-# ===========================================
-# PYINSTALLER
-# ===========================================
+# 🗃️ MISCELLANEOUS & TOOLS
 .pyInstaller/
-
-# ===========================================
-# MISCELLANEOUS
-# ===========================================
-# Cache directories
 .cache/
 *.cache
-
-# Temporary files
-*.tmp
-*.temp
+*.[Cc]ache
+!?*.[Cc]ache/
 tmp/
 temp/
+*.tmp
+*.temp
+TODO_List.md
+.ipynb_checkpoints/
+*.ipynb_checkpoints/
+
+# 🔀 GIT & CI/CD
+.git/
+.gitignore~
+.github/workflows/*.yml~
+.gitlab-ci.yml~

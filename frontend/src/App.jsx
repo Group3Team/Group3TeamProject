@@ -11,7 +11,8 @@ function Header({ isLoggedIn, onLogout }) {
   return (
     <header className="main-header">
       <Link to="/" style={{ textDecoration: 'none' }}>
-        <h1><span style={{ color: 'var(--accent-color)' }}>Dog</span>Go</h1>
+        <h1><span style={{ color: 'var(--accent-color)' }}>Dog</span>
+        <span style={{ color: 'var(--primary-color)' }}>GO</span></h1>
       </Link>
       <nav>
         {isLoggedIn ? (
@@ -54,7 +55,7 @@ function AppContent() {
               </div>
             </div>
             <div className="hero-image-container">
-              <img src="/hero.png" alt="Happy dog being walked" className="hero-image" />
+              <img src="/hero.png" alt="Guillermo Trigger!" className="hero-image" />
             </div>
           </div>
         } />

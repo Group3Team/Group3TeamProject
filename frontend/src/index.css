@@ -179,10 +179,24 @@ h1, h2, h3 {
   transition: transform 0.5s ease;
 }
 
+/* 1. Add this keyframe animation anywhere in the file */
+@keyframes hero-shake {
+  0%, 100% { transform: translateX(0) scale(1.05); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px) scale(1.05); }
+  20%, 40%, 60%, 80% { transform: translateX(4px) scale(1.05); }
+}
+
+/* 2. REPLACE your existing .hero-image:hover rule with this */
+.hero-image:hover {
+  animation: hero-shake 0.4s cubic-bezier(.36,.07,.19,.97) infinite;
+  transition: none; /* Prevents the old transition from fighting the animation */
+}
+
+/*
 .hero-image:hover {
   transform: scale(1.05);
 }
-
+*/
 .walker-card {
   display: flex;
   align-items: center;

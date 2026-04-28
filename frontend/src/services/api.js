@@ -2,7 +2,8 @@ import axios from 'axios';
 
 const api = axios.create({
   // Updated to port 8001 to match docker-compose.yml (8001:8000)
-  baseURL: 'http://localhost:8001/api', 
+  baseURL: import.meta.env.VITE_API_BASE_URL,
+  
   headers: { 'Content-Type': 'application/json' },
 });
 

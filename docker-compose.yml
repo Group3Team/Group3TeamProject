@@ -15,17 +15,22 @@ services:
       - DEBUG=True
       - SECRET_KEY=${DJANGO_SECRET_KEY}
       - GEMINI_API_KEY=${GEMINI_API_KEY}
-      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+      - ALLOWED_HOSTS="${ALLOWED_HOSTS:-localhost,192.168.2.105}"
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - DB_HOST=db
       - DB_PORT=5432
+      - CORS_ALLOWED_ORIGINS=http://localhost:3000,http://192.168.2.105:3000,*
+      - CORS_ALLOW_CREDENTIALS=True
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - app-network
-    command: ["gunicorn", "--bind", "0.0.0.0:8000", "--access-logfile", "-", "wsgi:application"]
+    # ✅ FIXED: Switched to ASGI server (daphne) for WebSocket support
+    # ✅ FIXED: Removed invalid trailing spaces in command array
+    command: ["daphne", "-b", "0.0.0.0", "-p", "8000", "asgi:application"]
     restart: unless-stopped
     logging:
       driver: "json-file"
@@ -39,15 +44,21 @@ services:
       dockerfile: Dockerfile
     container_name: react-frontend
     ports:
-      - "3000:5173"
+      - "3000:80"
     volumes:
       - ./frontend:/app
       - /app/node_modules
     networks:
       - app-network
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   db:
-    image: imresamu/postgis:18-3.6 # arm support, so works on my mac. 
+    image: imresamu/postgis:18-3.6
     container_name: postgres-db
     environment:
       - POSTGRES_DB=${POSTGRES_DB}
@@ -59,12 +70,17 @@ services:
       - "5433:5432"
     networks:
       - app-network
-    # Add health check for database readiness
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-postgres}"]
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 volumes:
   postgres_data:

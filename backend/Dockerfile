@@ -35,4 +35,5 @@ RUN python manage.py collectstatic --noinput || echo "Static collection skipped"
 EXPOSE 8000
 
 # Run the application
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "wsgi:application"]
+#CMD ["gunicorn", "--bind", "0.0.0.0:8000", "wsgi:application"]
+CMD ["daphne", "-b", "0.0.0.0", "-p", "8000", "asgi:application"]

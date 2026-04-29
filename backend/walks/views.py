@@ -1,9 +1,11 @@
 # walks/views.py - Allow unauthenticated users to GET and POST (search & create requests)
+from rest_framework.decorators import api_view, csrf_exempt
 from rest_framework import viewsets, permissions
 from django.db.models import Q
 from .models import Dog, WalkRequest
 from .serializers import DogSerializer, WalkRequestSerializer
 
+@csrf_exempt
 class CustomWalkRequestViewSet(viewsets.ModelViewSet):
     """Allow unauthenticated users to GET (browse) and POST (create requests), auth required for updates"""
     

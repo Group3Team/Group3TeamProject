@@ -2,9 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import "leaflet.locatecontrol";
-import "leaflet.locatecontrol/dist/L.Control.Locate.min.js";
-import "leaflet.locatecontrol/dist/L.Control.Locate.min.css";
+
 import Weather from "./components/Weather";
 
 
@@ -12,7 +10,7 @@ export default function WalkerView() {
   const [isOnline, setIsOnline] = useState(false);
   const [request, setRequest] = useState(null); // 'pending', 'accepted', 'in_progress'
   const [activeRequestData, setActiveRequestData] = useState(null);
-  const [, setWalkerLocation] = useState('');
+ 
   const [routeInfo, setRouteInfo] = useState(null);
 
   const navigate = useNavigate();
@@ -26,7 +24,7 @@ export default function WalkerView() {
     if (isOnline && !request) {
       const fetchRequests = async () => {
         try {
-          const response = await fetch('http://localhost:8001/api/walks/');
+          const response = await fetch('http://192.168.2.105:8001/api/walk-requests/');
           const data = await response.json();
           // Find the most recent 'SEARCHING' request
           const pending = data.filter(r => r.status === 'SEARCHING').sort((a, b) => b.id - a.id)[0];
@@ -49,7 +47,7 @@ export default function WalkerView() {
   const updateRequestStatus = async (newStatus) => {
     if (!activeRequestData) return;
     try {
-      const response = await fetch(`http://localhost:8001/api/walks/${activeRequestData.id}/`, {
+      const response = await fetch(`http://192.168.2.105:8001/api/walk-requests/${activeRequestData.id}/`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -83,36 +81,13 @@ export default function WalkerView() {
 
     mapInstanceRef.current = map;
 
-    L.tileLayer("https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png", {
+   L.tileLayer("https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png", {
       maxZoom: 19,
       attribution:
         '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     }).addTo(map);
 
-    L.control
-      .locate({
-        position: "topleft",
-        setView: true,
-        keepCurrentZoomLevel: true,
-        showCompass: false,
-        onLocationError: function (err) {
-          alert(err.message);
-        },
-        timeout: 1000,
-        maximumAge: 1000,
-      })
-      .addTo(map);
-   
-      map.on("locationtimeout", function (e) {
-        console.log("Location timeout count:", e.count);
-        // Provide custom feedback or retry logic
-      });
-
-      map.on("locationfound", function (e) {
-        setWalkerLocation(e.latlng)
-  console.log("Location found:", e.latlng);
-  console.log("Accuracy:", e.accuracy, "meters");
-});
+    // L.control.locate removed - leaflet.locatecontrol module causes build errors
       
     return () => {
       map.remove();

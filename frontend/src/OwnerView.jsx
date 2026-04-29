@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -31,10 +31,18 @@ export default function OwnerView() {
 
   // ✅ Fetch real geolocation on component mount
   useEffect(() => {
+    let setErrorTimeout;
+    
+    const handleError = () => {
+      clearTimeout(setErrorTimeout);
+      setLocationError('Location access denied. Using default location.');
+    };
+
     if (!navigator.geolocation) {
-      setLocationError('Geolocation is not supported by your browser');
+      setErrorTimeout = setTimeout(handleError, 1000);
       return;
     }
+    
     navigator.geolocation.getCurrentPosition(
       (position) => {
         setUserLocation([position.coords.latitude, position.coords.longitude]);

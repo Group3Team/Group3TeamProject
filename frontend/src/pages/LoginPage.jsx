@@ -1,14 +1,26 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
-export default function LoginPage({ onLogin }) {
-  const [form, setForm] = useState({ email: '', password: '' });
+export default function LoginPage() {
+  const [form, setForm] = useState({ username: '', password: '' });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onLogin();
-    navigate('/role');
+    setError('');
+    setLoading(true);
+    try {
+      await login(form.username, form.password);
+      navigate('/dashboard');
+    } catch {
+      setError('Invalid username or password');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -16,15 +28,21 @@ export default function LoginPage({ onLogin }) {
       <div className="glass-panel" style={{ width: '100%', maxWidth: '420px' }}>
         <h2 style={{ textAlign: 'center', marginBottom: '1.5rem' }}>Welcome Back</h2>
 
+        {error && (
+          <p style={{ color: '#d63031', background: 'rgba(214,48,49,0.1)', padding: '0.5rem 1rem', borderRadius: '8px', marginBottom: '1rem' }}>
+            {error}
+          </p>
+        )}
+
         <form onSubmit={handleSubmit}>
-          <label style={labelStyle}>Email</label>
+          <label style={labelStyle}>Username</label>
           <input
             className="input-field"
-            type="email"
-            placeholder="you@example.com"
+            type="text"
+            placeholder="your_username"
             required
-            value={form.email}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            value={form.username}
+            onChange={(e) => setForm({ ...form, username: e.target.value })}
           />
 
           <label style={labelStyle}>Password</label>
@@ -37,8 +55,8 @@ export default function LoginPage({ onLogin }) {
             onChange={(e) => setForm({ ...form, password: e.target.value })}
           />
 
-          <button className="btn" type="submit" style={{ width: '100%', marginTop: '0.5rem' }}>
-            Log In
+          <button className="btn" type="submit" style={{ width: '100%', marginTop: '0.5rem' }} disabled={loading}>
+            {loading ? 'Logging in...' : 'Log In'}
           </button>
         </form>
 

@@ -1,19 +1,31 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
-export default function SignupPage({ onLogin }) {
-  const [form, setForm] = useState({ name: '', email: '', password: '', confirm: '' });
+export default function SignupPage() {
+  const [form, setForm] = useState({ username: '', email: '', password: '', confirm: '', role: 'OWNER' });
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const { register } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
     if (form.password !== form.confirm) {
       setError('Passwords do not match');
       return;
     }
-    onLogin();
-    navigate('/role');
+    setLoading(true);
+    try {
+      await register(form.username, form.email, form.password, form.role);
+      navigate('/dashboard');
+    } catch (err) {
+      const data = err.response?.data;
+      setError(data?.error || 'Registration failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -28,14 +40,14 @@ export default function SignupPage({ onLogin }) {
         )}
 
         <form onSubmit={handleSubmit}>
-          <label style={labelStyle}>Full Name</label>
+          <label style={labelStyle}>Username</label>
           <input
             className="input-field"
             type="text"
-            placeholder="John Doe"
+            placeholder="your_username"
             required
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            value={form.username}
+            onChange={(e) => setForm({ ...form, username: e.target.value })}
           />
 
           <label style={labelStyle}>Email</label>
@@ -47,6 +59,16 @@ export default function SignupPage({ onLogin }) {
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
           />
+
+          <label style={labelStyle}>Role</label>
+          <select
+            className="input-field"
+            value={form.role}
+            onChange={(e) => setForm({ ...form, role: e.target.value })}
+          >
+            <option value="OWNER">Owner</option>
+            <option value="WALKER">Walker</option>
+          </select>
 
           <label style={labelStyle}>Password</label>
           <input
@@ -68,8 +90,8 @@ export default function SignupPage({ onLogin }) {
             onChange={(e) => setForm({ ...form, confirm: e.target.value })}
           />
 
-          <button className="btn" type="submit" style={{ width: '100%', marginTop: '0.5rem' }}>
-            Sign Up
+          <button className="btn" type="submit" style={{ width: '100%', marginTop: '0.5rem' }} disabled={loading}>
+            {loading ? 'Creating account...' : 'Sign Up'}
           </button>
         </form>
 

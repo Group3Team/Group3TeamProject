@@ -173,7 +173,7 @@ export default function WalkerView() {
       <div className="glass-panel">
         <button
           className="btn btn-outline"
-          onClick={() => navigate("/role")}
+          onClick={() => navigate("/dashboard")}
           style={{
             marginBottom: "1.5rem",
             padding: "0.4rem 1rem",

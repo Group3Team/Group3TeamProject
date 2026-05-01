@@ -1,13 +1,23 @@
-import { useState } from 'react';
 import { Routes, Route, Link, useNavigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import PrivateRoute from './components/PrivateRoute';
 import OwnerView from './OwnerView';
 import WalkerView from './WalkerView';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import RolePage from './pages/RolePage';
+import DashboardPage from './pages/DashboardPage';
 import './index.css';
 
-function Header({ isLoggedIn, onLogout }) {
+function Header() {
+  const { isLoggedIn, user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
   return (
     <header className="main-header">
       <Link to="/" style={{ textDecoration: 'none' }}>
@@ -16,7 +26,15 @@ function Header({ isLoggedIn, onLogout }) {
       </Link>
       <nav>
         {isLoggedIn ? (
-          <button className="btn btn-outline" onClick={onLogout}>Log Out</button>
+          <>
+            <Link to="/dashboard" className="btn btn-outline" style={{ marginRight: '1rem' }}>Dashboard</Link>
+            {user?.role === 'OWNER' ? (
+              <Link to="/owner" className="btn btn-outline" style={{ marginRight: '1rem' }}>Request Walk</Link>
+            ) : (
+              <Link to="/walker" className="btn btn-outline" style={{ marginRight: '1rem' }}>Find Jobs</Link>
+            )}
+            <button className="btn btn-outline" onClick={handleLogout}>Log Out</button>
+          </>
         ) : (
           <>
             <Link to="/login" className="btn btn-outline" style={{ marginRight: '1rem' }}>Log In</Link>
@@ -29,18 +47,9 @@ function Header({ isLoggedIn, onLogout }) {
 }
 
 function AppContent() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    navigate('/');
-  };
-
   return (
     <div className="app-container">
-      <Header isLoggedIn={isLoggedIn} onLogout={handleLogout} />
-
+      <Header />
       <Routes>
         <Route path="/" element={
           <div className="hero-section animate-fade-in">
@@ -59,16 +68,21 @@ function AppContent() {
             </div>
           </div>
         } />
-        <Route path="/login" element={<LoginPage onLogin={() => setIsLoggedIn(true)} />} />
-        <Route path="/signup" element={<SignupPage onLogin={() => setIsLoggedIn(true)} />} />
-        <Route path="/role" element={<RolePage />} />
-        <Route path="/owner" element={<OwnerView />} />
-        <Route path="/walker" element={<WalkerView />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupPage />} />
+        <Route path="/dashboard" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
+        <Route path="/role" element={<PrivateRoute><RolePage /></PrivateRoute>} />
+        <Route path="/owner" element={<PrivateRoute><OwnerView /></PrivateRoute>} />
+        <Route path="/walker" element={<PrivateRoute><WalkerView /></PrivateRoute>} />
       </Routes>
     </div>
   );
 }
 
 export default function App() {
-  return <AppContent />;
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
+  );
 }

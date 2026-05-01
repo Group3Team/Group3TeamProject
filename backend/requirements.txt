@@ -14,3 +14,4 @@ requests==2.33.1
 sqlparse==0.5.5
 urllib3==2.6.3
 google-genai
+djangorestframework-simplejwt==5.5.1

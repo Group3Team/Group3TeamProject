@@ -49,6 +49,8 @@ h1, h2, h3 {
   margin: 0 auto;
   padding: 2rem;
   width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .glass-panel {
@@ -219,6 +221,17 @@ h1, h2, h3 {
   display: grid;
   grid-template-columns: 1fr 1.5fr;
   gap: 2rem;
+  min-width: 0;
+}
+
+.grid-2 > * {
+  min-width: 0;
+}
+
+@media (max-width: 1024px) {
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 768px) {

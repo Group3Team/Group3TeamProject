@@ -103,7 +103,7 @@ export default function OwnerView() {
   return (
     <div className="grid-2 animate-fade-in">
       <div className="glass-panel">
-        <button className="btn btn-outline" onClick={() => navigate('/role')} style={{ marginBottom: '1.5rem', padding: '0.4rem 1rem', fontSize: '0.9rem' }}>
+        <button className="btn btn-outline" onClick={() => navigate('/dashboard')} style={{ marginBottom: '1.5rem', padding: '0.4rem 1rem', fontSize: '0.9rem' }}>
           ← Back to Menu
         </button>
         <h2>Request a Dog Walker</h2>

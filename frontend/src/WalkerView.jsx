@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import "leaflet.locatecontrol";
-import "leaflet.locatecontrol/dist/L.Control.Locate.min.js";
 import "leaflet.locatecontrol/dist/L.Control.Locate.min.css";
 import Weather from "./components/Weather";
 
@@ -26,7 +25,7 @@ export default function WalkerView() {
     if (isOnline && !request) {
       const fetchRequests = async () => {
         try {
-          const response = await fetch('http://localhost:8001/api/walks/');
+          const response = await fetch(`${import.meta.env.VITE_API_URL || '/api'}/walks/`);
           const data = await response.json();
           // Find the most recent 'SEARCHING' request
           const pending = data.filter(r => r.status === 'SEARCHING').sort((a, b) => b.id - a.id)[0];
@@ -49,7 +48,7 @@ export default function WalkerView() {
   const updateRequestStatus = async (newStatus) => {
     if (!activeRequestData) return;
     try {
-      const response = await fetch(`http://localhost:8001/api/walks/${activeRequestData.id}/`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || '/api'}/walks/${activeRequestData.id}/`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

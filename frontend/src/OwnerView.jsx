@@ -30,7 +30,7 @@ export default function OwnerView() {
     if (activeRequestId && step !== 'request' && step !== 'completed') {
       const checkStatus = async () => {
         try {
-          const response = await fetch(`http://localhost:8001/api/walks/${activeRequestId}/`);
+          const response = await fetch(`${import.meta.env.VITE_API_URL || '/api'}/walks/${activeRequestId}/`);
           const data = await response.json();
           
           if (data.status === 'ACCEPTED') setStep('arriving');
@@ -61,7 +61,7 @@ export default function OwnerView() {
         duration_minutes: parseInt(duration),
       };
 
-      const response = await fetch('http://localhost:8001/api/walks/', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || '/api'}/walks/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -87,7 +87,7 @@ export default function OwnerView() {
   const cancelRequest = async () => {
     if (!activeRequestId) return;
     try {
-      const response = await fetch(`http://localhost:8001/api/walks/${activeRequestId}/`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || '/api'}/walks/${activeRequestId}/`, {
         method: 'DELETE',
       });
       if (!response.ok) throw new Error('Failed to cancel request');

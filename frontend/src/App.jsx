@@ -7,6 +7,7 @@ import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import RolePage from './pages/RolePage';
 import DashboardPage from './pages/DashboardPage';
+import ProfileOwner from './pages/ProfileOwner';
 import './index.css';
 
 function Header() {
@@ -74,6 +75,7 @@ function AppContent() {
         <Route path="/role" element={<PrivateRoute><RolePage /></PrivateRoute>} />
         <Route path="/owner" element={<PrivateRoute><OwnerView /></PrivateRoute>} />
         <Route path="/walker" element={<PrivateRoute><WalkerView /></PrivateRoute>} />
+        <Route path="/profile" element={<PrivateRoute><ProfileOwner /></PrivateRoute>} />
       </Routes>
     </div>
   );

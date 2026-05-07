@@ -1,15 +1,16 @@
-# Use Python 3.13 slim image LTS
-FROM python:3.13.13-slim
+# Use Python 3.12 slim image LTS (matches venv python version)
+FROM python:3.12-slim
 
 # Set environment variables
-ENV PYTHONUNBUFFERED=1
-ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1
 
 # Set working directory
 WORKDIR /app
 
 # Install system dependencies including PostgreSQL client and GDAL for PostGIS
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     libpq-dev \
     python3-dev \
@@ -17,22 +18,26 @@ RUN apt-get update && apt-get install -y \
     libproj-dev \
     gdal-bin \
     libgdal-dev \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements first for better caching
+# Copy requirements first for better layer caching
 COPY backend/requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 
 # Copy project files
 COPY . .
 
-# Collect static files (this will include frontend build if it exists)
-# Skip this step in Dockerfile since we're not building the frontend here
-# The frontend should be built separately and served by Django properly
-RUN python manage.py collectstatic --noinput || echo "Static collection skipped"
-
-# Expose port
 EXPOSE 8000
 
-# Run the application
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "wsgi:application"]
+# Health check for container orchestration
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD curl -f http://localhost:8000/admin/ || exit 1
+
+# Run the application with production-ready gunicorn settings
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", \
+     "--access-logfile", "-", \
+     "--error-logfile", "-", \
+     "--workers", "2", \
+     "--timeout", "120", \
+     "wsgi:application"]

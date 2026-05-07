@@ -6,5 +6,21 @@ export default defineConfig({
   plugins: [react()],
   optimizeDeps: {
     exclude: ['leaflet.locatecontrol']
+  },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://backend:8000',
+        changeOrigin: true,
+      },
+      '/admin': {
+        target: 'http://backend:8000',
+        changeOrigin: true,
+      },
+      '/static': {
+        target: 'http://backend:8000',
+        changeOrigin: true,
+      }
+    }
   }
 })

@@ -17,6 +17,8 @@ frontend/.env
 *.cer
 *.p12
 *.pfx
+*.swp
+*.swo
 google_service_account_key.json
 ./secrets/*
 .aws/credentials
@@ -26,12 +28,14 @@ aws-credentials.txt
 
 # 💻 IDEs & EDITORS
 .vscode/*
+.vscode/
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
 !.vscode/*.code-snippets
 .idea/
+.idea/modules.xml
 *.iml
 *.code-workspace
 *.suo
@@ -73,11 +77,15 @@ tempCodeRunnerFile.py
 .DS_Store?
 ._*
 .Spotlight-V100
+.kilo/
+.kilocode/
+.specify/
+specs/
 .Trashes
 ehthumbs.db
 Thumbs.db
 Desktop.ini
-.kilo
+
 *~
 ~$*
 
@@ -86,6 +94,8 @@ __pycache__/
 pycache/
 *.py[cod]
 *$py.class
+*.pyc
+*.pyo
 .Python
 db.sqlite3
 db.sqlite3-journal
@@ -93,8 +103,10 @@ db.sqlite3-journal
 local_settings.py
 *.pot
 *.mo
+*.so
 .abstra/
 marimo/_static/
+staticfiles/
 marimo/_lsp/
 marimo/
 celerybeat-schedule*
@@ -124,6 +136,7 @@ frontend/.vite/
 .vite/
 
 # 📦 BUILD OUTPUTS & ARTIFACTS
+media/
 [Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/
@@ -206,6 +219,7 @@ Dockerfile~
 postgres_data/
 pgdata/
 docker-volumes/
+.docker-context-*/
 
 # 🗄️ DATABASE & BACKUPS
 *.sql
@@ -276,6 +290,8 @@ env.bak/
 MANIFEST
 eggs/
 .eggs/
+develop-eggs/
+downloads/
 lib/
 lib64/
 parts/

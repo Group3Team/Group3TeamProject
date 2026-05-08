@@ -21,9 +21,17 @@ class WalkRequestViewSet(viewsets.ModelViewSet):
     queryset = WalkRequest.objects.all()
 
     def get_queryset(self):
+        # Allow users to see their own requests, requests they are walking, or any unassigned SEARCHING requests
         return WalkRequest.objects.filter(
-            Q(owner=self.request.user) | Q(walker=self.request.user)
+            Q(owner=self.request.user) | Q(walker=self.request.user) | Q(status='SEARCHING')
         )
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+
+    def perform_update(self, serializer):
+        # If transitioning to ACCEPTED, assign the current user as the walker
+        if serializer.validated_data.get('status') == 'ACCEPTED' and not serializer.instance.walker:
+            serializer.save(walker=self.request.user)
+        else:
+            serializer.save()

@@ -2,8 +2,8 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import "leaflet.locatecontrol";
-import "leaflet.locatecontrol/dist/L.Control.Locate.min.css";
+// import "leaflet.locatecontrol";
+// import "leaflet.locatecontrol/dist/L.Control.Locate.min.css";
 import Weather from "./components/Weather";
 import api from './services/api';
 
@@ -80,6 +80,7 @@ export default function WalkerView() {
         '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     }).addTo(map);
 
+    /*
     L.control
       .locate({
         position: "topleft",
@@ -93,6 +94,7 @@ export default function WalkerView() {
         maximumAge: 1000,
       })
       .addTo(map);
+    */
    
       map.on("locationtimeout", function (e) {
         console.log("Location timeout count:", e.count);

@@ -5,7 +5,7 @@ import L from "leaflet";
 import { locate } from "leaflet.locatecontrol";
 import "leaflet.locatecontrol/dist/L.Control.Locate.min.css";
 import Weather from "./components/Weather";
-
+import api from './services/api';
 
 export default function WalkerView() {
   const [isOnline, setIsOnline] = useState(false);
@@ -25,8 +25,8 @@ export default function WalkerView() {
     if (isOnline && !request) {
       const fetchRequests = async () => {
         try {
-          const response = await fetch(`${import.meta.env.VITE_API_URL || '/api'}/walks/`);
-          const data = await response.json();
+          const response = await api.get('/walk-requests/');
+          const data = response.data;
           // Find the most recent 'SEARCHING' request
           const pending = data.filter(r => r.status === 'SEARCHING').sort((a, b) => b.id - a.id)[0];
           
@@ -48,16 +48,8 @@ export default function WalkerView() {
   const updateRequestStatus = async (newStatus) => {
     if (!activeRequestData) return;
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || '/api'}/walks/${activeRequestData.id}/`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status: newStatus }),
-      });
-      if (!response.ok) throw new Error('Failed to update status');
-      
-      const updatedData = await response.json();
+      const response = await api.patch(`/walk-requests/${activeRequestData.id}/`, { status: newStatus });
+      const updatedData = response.data;
       setActiveRequestData(updatedData);
       
       if (newStatus === 'ACCEPTED') setRequest('accepted');

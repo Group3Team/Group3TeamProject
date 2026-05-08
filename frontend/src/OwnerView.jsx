@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
+import api from './services/api';
 
 // Fix for default marker icon in react-leaflet
 import L from 'leaflet';
@@ -21,6 +22,7 @@ export default function OwnerView() {
   const [ownerAddress, setOwnerAddress] = useState('');
   const [duration, setDuration] = useState(30);
   const [activeRequestId, setActiveRequestId] = useState(null);
+  const [activeRequestData, setActiveRequestData] = useState(null);
   const position = [51.505, -0.09];
   const navigate = useNavigate();
 
@@ -30,8 +32,9 @@ export default function OwnerView() {
     if (activeRequestId && step !== 'request' && step !== 'completed') {
       const checkStatus = async () => {
         try {
-          const response = await fetch(`${import.meta.env.VITE_API_URL || '/api'}/walks/${activeRequestId}/`);
-          const data = await response.json();
+          const response = await api.get(`/walk-requests/${activeRequestId}/`);
+          const data = response.data;
+          setActiveRequestData(data);
           
           if (data.status === 'ACCEPTED') setStep('arriving');
           if (data.status === 'IN_PROGRESS') setStep('in_progress');
@@ -61,19 +64,8 @@ export default function OwnerView() {
         duration_minutes: parseInt(duration),
       };
 
-      const response = await fetch(`${import.meta.env.VITE_API_URL || '/api'}/walks/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to create walk request');
-      }
-
-      const data = await response.json();
+      const response = await api.post('/walk-requests/', payload);
+      const data = response.data;
       setActiveRequestId(data.id);
       
       // Removed simulations - the useEffect polling will now drive the state changes
@@ -87,10 +79,7 @@ export default function OwnerView() {
   const cancelRequest = async () => {
     if (!activeRequestId) return;
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || '/api'}/walks/${activeRequestId}/`, {
-        method: 'DELETE',
-      });
-      if (!response.ok) throw new Error('Failed to cancel request');
+      await api.delete(`/walk-requests/${activeRequestId}/`);
       
       setStep('request');
       setActiveRequestId(null);
@@ -186,15 +175,15 @@ export default function OwnerView() {
             <div className="status-badge" style={{ background: 'var(--primary-color)' }}>Walker Arriving</div>
             
             <div className="walker-card">
-              <img src="/walker.png" alt="Alex the walker" className="walker-avatar" />
+              <img src="/walker.png" alt="Walker avatar" className="walker-avatar" />
               <div>
-                <h3 style={{ marginBottom: '0.2rem' }}>Alex is on the way!</h3>
+                <h3 style={{ marginBottom: '0.2rem' }}>{activeRequestData?.walker_username || 'Your walker'} is on the way!</h3>
                 <p style={{ color: 'var(--background-light)', margin: 0 }}>★ 4.9 (120 walks) • Estimated arrival: 4 mins</p>
               </div>
             </div>
             
             <div style={{ background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem' }}>
-              <h4>Chat with Alex</h4>
+              <h4>Chat with {activeRequestData?.walker_username || 'your walker'}</h4>
               <div style={{ height: '100px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', borderBottom: '1px solid var(--glass-border)', marginBottom: '1rem', paddingBottom: '0.5rem' }}>
                 <div style={{ background: 'var(--primary-color)', padding: '0.5rem', borderRadius: '8px', alignSelf: 'flex-start', marginBottom: '0.5rem' }}>Hi, I'm 2 blocks away!</div>
               </div>

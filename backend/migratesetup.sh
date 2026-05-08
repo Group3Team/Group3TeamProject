@@ -7,11 +7,13 @@ until docker compose exec backend python manage.py showmigrations > /dev/null 2>
 done
 echo "Database is ready!"
 
-docker compose exec backend python manage.py makemigrations walks
-docker compose exec backend python manage.py makemigrations walkers
-docker compose exec backend python manage.py makemigrations users
-docker compose exec backend python manage.py makemigrations notifications
+#docker compose exec backend python manage.py makemigrations walks
+#docker compose exec backend python manage.py makemigrations walkers
+#docker compose exec backend python manage.py makemigrations users
+#docker compose exec backend python manage.py makemigrations notifications
 sleep 3
 docker compose exec backend python manage.py migrate
+sleep 3
+docker compose exec backend python manage.py seed_data
 sleep 3
 docker compose exec backend python manage.py createsuperuser

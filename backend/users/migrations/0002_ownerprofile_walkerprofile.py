@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('max_dogs', models.IntegerField(default=1)),
-                ('service_radius_km', models.FloatField(default=5.0)),
+                ('service_radius_miles', models.FloatField(default=5.0, help_text="Service radius in miles for walk request matching")),
                 ('current_location', django.contrib.gis.db.models.fields.PointField(blank=True, null=True, srid=4326)),
                 ('is_online', models.BooleanField(default=False)),
                 ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='walker_profile', to=settings.AUTH_USER_MODEL)),

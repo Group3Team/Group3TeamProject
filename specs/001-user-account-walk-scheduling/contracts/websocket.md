@@ -43,7 +43,7 @@ Sent when a new `WalkRequest` with status `SEARCHING` is created and the authent
     "dogs": [
       { "name": "Buddy", "breed": "Golden Retriever", "aggressiveness": "LOW" }
     ],
-    "distance_km": 3.2,
+    "distance_miles": 2.0,
     "action_url": "/api/walk-requests/42/accept/"
   }
 }

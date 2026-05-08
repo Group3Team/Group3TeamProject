@@ -19,6 +19,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gdal-bin \
     libgdal-dev \
     curl \
+    supervisor \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first for better layer caching
@@ -29,15 +30,12 @@ RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 EXPOSE 8000
+EXPOSE 8765
 
 # Health check for container orchestration
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
     CMD curl -f http://localhost:8000/admin/ || exit 1
 
-# Run the application with production-ready gunicorn settings
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", \
-     "--access-logfile", "-", \
-     "--error-logfile", "-", \
-     "--workers", "2", \
-     "--timeout", "120", \
-     "wsgi:application"]
+COPY backend/supervisord.conf /etc/supervisor/
+
+ENTRYPOINT ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]

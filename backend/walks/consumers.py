@@ -1,9 +1,33 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
+from asgiref.sync import sync_to_async
 
 class WalkConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        self.walk_id = self.scope['url_route']['kwargs']['walk_id']
+        try:
+            walk_id = int(self.scope['url_route']['kwargs']['walk_id'])
+        except (ValueError, KeyError):
+            await self.close(code=4004)  # Bad request ID
+            return
+
+        user = self.scope.get('user')
+        if not user or not user.is_authenticated:
+            await self.close(code=4001)  # Unauthorized — no valid session
+            return
+
+        try:
+            from .models import WalkRequest
+            walk_request = await sync_to_async(WalkRequest.objects.get)(pk=walk_id)
+        except WalkRequest.DoesNotExist:
+            await self.close(code=4004)  # Not found
+            return
+
+        # Only owner or assigned walker can join the walk WebSocket
+        if user != walk_request.owner and (walk_request.walker is None or user != walk_request.walker):
+            await self.close(code=4003)  # Forbidden
+            return
+
+        self.walk_id = walk_id
         self.room_group_name = f'walk_{self.walk_id}'
 
         await self.channel_layer.group_add(

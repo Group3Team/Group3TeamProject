@@ -7,6 +7,7 @@ import "leaflet.locatecontrol/dist/L.Control.Locate.min.css";
 import Weather from "./components/Weather";
 import api from './services/api';
 
+
 export default function WalkerView() {
   const [isOnline, setIsOnline] = useState(false);
   const [request, setRequest] = useState(null); // 'pending', 'accepted', 'in_progress'
@@ -27,6 +28,7 @@ export default function WalkerView() {
         try {
           const response = await api.get('/walk-requests/');
           const data = response.data;
+
           // Find the most recent 'SEARCHING' request
           const pending = data.filter(r => r.status === 'SEARCHING').sort((a, b) => b.id - a.id)[0];
           

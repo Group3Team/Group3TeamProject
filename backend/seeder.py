@@ -20,7 +20,7 @@ print("=" * 60)
 # ============================================================
 # Dog Owners (5 accounts)
 # Coordinates placed across the Bay Area for spatial query testing
-# All within ~32 km of each other (supports 20-mile radius matching)
+# All within ~32 miles of each other (supports 20-mile radius matching)
 # ============================================================
 owners_data = [
     {
@@ -185,14 +185,14 @@ for data in walkers_data:
             "current_location": data["service_location"],
             "is_online": True,
             "max_dogs": 3,
-            "service_radius_km": 20.0,
+            "service_radius_miles": 20.0,
         },
     )
     if not _:
         wp.current_location = data["service_location"]
         wp.is_online = True
         wp.max_dogs = 3
-        wp.service_radius_km = 20.0
+        wp.service_radius_miles = 20.0
         wp.save()
 
     status = "CREATED" if created else "EXISTING (updated)"
@@ -214,7 +214,7 @@ walker_count = User.objects.filter(role='WALKER').count()
 print(f"Total Walkers:     {walker_count}")
 for w in User.objects.filter(role='WALKER'):
     wp = WalkerProfile.objects.get(user=w)
-    print(f"  - {w.username} ({w.email}) — online={wp.is_online}, radius={wp.service_radius_km}km")
+    print(f"  - {w.username} ({w.email}) — online={wp.is_online}, radius={wp.service_radius_miles}mi")
 
 print("")
 print("Credentials for ALL accounts:")

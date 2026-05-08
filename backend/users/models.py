@@ -21,7 +21,7 @@ class User(AbstractUser):
 class WalkerProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='walker_profile')
     max_dogs = models.IntegerField(default=1)
-    service_radius_km = models.FloatField(default=5.0)
+    service_radius_miles = models.FloatField(default=5.0, help_text="Service radius in miles for walk request matching")
     current_location = models.PointField(null=True, blank=True)
     is_online = models.BooleanField(default=False)
 

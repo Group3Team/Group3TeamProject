@@ -259,7 +259,7 @@ Transition walk request to a new lifecycle state: ARRIVING → IN_PROGRESS → C
 ### GET `/api/walkers/availability/me/`
 Return current walker availability status.
 
-**Response 200 OK**: `{ "is_online": false, "service_radius_km": 5.0 }`
+**Response 200 OK**: `{ "is_online": false, "service_radius_miles": 5.0 }`
 
 ### PATCH `/api/walkers/availability/me/`
 Toggle online/offline availability and update service radius. Called from WalkerDashboard.
@@ -268,18 +268,18 @@ Toggle online/offline availability and update service radius. Called from Walker
 ```json
 {
   "is_online": true,
-  "service_radius_km": 8.0
+  "service_radius_miles": 8.0
 }
 ```
 
 **Response 200 OK**: Updated availability object  
-**Validation**: `service_radius_km` must be > 0 and <= 32 (max ~20 miles)
+**Validation**: `service_radius_miles` must be > 0 and <= 32 (default 5.0, max 20 miles)
 
 ### GET `/api/walkers/available-requests/`
 List walk requests that are within the authenticated walker's service radius and are still SEARCHING. Uses PostGIS spatial query: `pickup_location__distance_lt=(home_location, D(miles=20))`.
 
 **Query params**: `page`, `limit=20`  
-**Response 200 OK**: Paginated list of WalkRequests with distance metadata (`"distance_km": 4.2`) — sorted by closest first. This is the WalkerDashboard "Find Jobs" feed.
+**Response 200 OK**: Paginated list of WalkRequests with distance metadata (`"distance_miles": 2.6`) — sorted by closest first. This is the WalkerDashboard "Find Jobs" feed.
 
 ---
 

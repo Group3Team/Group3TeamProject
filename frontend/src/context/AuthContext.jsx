@@ -14,14 +14,13 @@ export function AuthProvider({ children }) {
   });
 
   const login = useCallback(async (username, password) => {
-    const { data } = await api.post('/auth/token/', { username, password });
-    localStorage.setItem('access_token', data.access);
-    localStorage.setItem('refresh_token', data.refresh);
-    const me = await api.get('/users/');
-    const found = me.data.find((u) => u.username === username) || me.data[0];
-    localStorage.setItem('user', JSON.stringify(found));
-    setUser(found);
-    return found;
+    const { data: authData } = await api.post('/auth/token/', { username, password });
+    localStorage.setItem('access_token', authData.access);
+    localStorage.setItem('refresh_token', authData.refresh);
+    const { data: profileData } = await api.get('users/me/');
+    localStorage.setItem('user', JSON.stringify(profileData));
+    setUser(profileData);
+    return profileData;
   }, []);
 
   const register = useCallback(async (username, email, password, role) => {

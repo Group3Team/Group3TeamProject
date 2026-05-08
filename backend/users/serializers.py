@@ -4,7 +4,7 @@ from .models import User, WalkerProfile, OwnerProfile
 class WalkerProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = WalkerProfile
-        fields = ['max_dogs', 'service_radius_km', 'current_location', 'is_online']
+        fields = ['max_dogs', 'service_radius_miles', 'current_location', 'is_online']
 
 class OwnerProfileSerializer(serializers.ModelSerializer):
     class Meta:

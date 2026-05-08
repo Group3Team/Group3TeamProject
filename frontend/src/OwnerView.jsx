@@ -4,6 +4,7 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import api from './services/api';
 
+
 // Fix for default marker icon in react-leaflet
 import L from 'leaflet';
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -55,17 +56,17 @@ export default function OwnerView() {
       setStep('searching');
       
       const payload = {
-        owner: 1, 
-        dogs: [], 
-        status: 'SEARCHING',
-        pickup_location: 'POINT(-0.09 51.505)',
         owner_phone: ownerPhone,
         owner_address: ownerAddress,
         duration_minutes: parseInt(duration),
+        dogs: [], 
+        dogs: [], 
       };
+
 
       const response = await api.post('/walk-requests/', payload);
       const data = response.data;
+
       setActiveRequestId(data.id);
       
       // Removed simulations - the useEffect polling will now drive the state changes
@@ -79,8 +80,8 @@ export default function OwnerView() {
   const cancelRequest = async () => {
     if (!activeRequestId) return;
     try {
+
       await api.delete(`/walk-requests/${activeRequestId}/`);
-      
       setStep('request');
       setActiveRequestId(null);
     } catch (error) {

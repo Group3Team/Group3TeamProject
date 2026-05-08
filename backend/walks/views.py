@@ -24,3 +24,6 @@ class WalkRequestViewSet(viewsets.ModelViewSet):
         return WalkRequest.objects.filter(
             Q(owner=self.request.user) | Q(walker=self.request.user)
         )
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)

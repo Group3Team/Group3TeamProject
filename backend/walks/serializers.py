@@ -11,3 +11,4 @@ class WalkRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = WalkRequest
         fields = '__all__'
+        read_only_fields = ['owner']

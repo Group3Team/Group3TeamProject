@@ -239,3 +239,77 @@ h1, h2, h3 {
     grid-template-columns: 1fr;
   }
 }
+
+/* Profile pages */
+.profile-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.profile-page > h2 {
+  margin-bottom: 1.5rem;
+}
+
+.profile-section {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.profile-section:last-child {
+  padding-bottom: 0;
+  margin-bottom: 0;
+  border-bottom: none;
+}
+
+.profile-section-body {
+  flex: 1;
+}
+
+.profile-label {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--secondary-color);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.profile-label + .profile-label {
+  margin-top: 0.75rem;
+}
+
+.profile-value {
+  margin: 0.25rem 0 0;
+  font-size: 1.05rem;
+  color: var(--text-light);
+}
+
+.profile-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--accent-color);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.profile-thumb {
+  width: 72px;
+  height: 72px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 2px solid var(--glass-border);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.profile-settings {
+  display: block;
+}
+
+.profile-settings h3 {
+  margin-bottom: 0.75rem;
+}

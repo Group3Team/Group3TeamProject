@@ -8,6 +8,8 @@ class DogSerializer(serializers.ModelSerializer):
         read_only_fields = ['owner']
 
 class WalkRequestSerializer(serializers.ModelSerializer):
+    walker_username = serializers.CharField(source='walker.username', read_only=True)
+    
     class Meta:
         model = WalkRequest
         fields = '__all__'

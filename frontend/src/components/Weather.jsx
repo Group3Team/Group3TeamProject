@@ -53,7 +53,7 @@ export default function Weather() {
       </div>
 
       <p style={{ margin: "0 0 1rem 0", fontStyle: "italic", lineHeight: 1.4 }}>
-        {data.note} - PawWalkerAI
+        {data.note} - DogGoAI
       </p>
 
       {data.forecast && data.forecast.length > 0 && (

@@ -81,7 +81,7 @@ export default function Weather() {
                     {period.temperature}°
                   </div>
                   <div style={{ fontSize: "0.7rem", color: "var(--background-light)" }}>
-                    {period.shortForecast}
+                  <img src={period.icon} style={{  borderRadius: "8px", width: "35px", height: "35px" }} alt={period.shortForecast} />
                   </div>
                 </div>
               );

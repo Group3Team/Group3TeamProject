@@ -9,7 +9,6 @@ from django.contrib.auth import get_user_model
 from users.models import OwnerProfile, WalkerProfile
 from walks.models import Dog
 from django.contrib.gis.geos import Point
-import os
 
 User = get_user_model()
 

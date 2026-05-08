@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
+import api from './services/api';
 
 // Fix for default marker icon in react-leaflet
 import L from 'leaflet';
@@ -30,8 +31,8 @@ export default function OwnerView() {
     if (activeRequestId && step !== 'request' && step !== 'completed') {
       const checkStatus = async () => {
         try {
-          const response = await fetch(`${import.meta.env.VITE_API_URL || '/api'}/walks/${activeRequestId}/`);
-          const data = await response.json();
+          const response = await api.get(`/walk-requests/${activeRequestId}/`);
+          const data = response.data;
           
           if (data.status === 'ACCEPTED') setStep('arriving');
           if (data.status === 'IN_PROGRESS') setStep('in_progress');
@@ -61,19 +62,8 @@ export default function OwnerView() {
         duration_minutes: parseInt(duration),
       };
 
-      const response = await fetch(`${import.meta.env.VITE_API_URL || '/api'}/walks/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to create walk request');
-      }
-
-      const data = await response.json();
+      const response = await api.post('/walk-requests/', payload);
+      const data = response.data;
       setActiveRequestId(data.id);
       
       // Removed simulations - the useEffect polling will now drive the state changes
@@ -87,10 +77,7 @@ export default function OwnerView() {
   const cancelRequest = async () => {
     if (!activeRequestId) return;
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || '/api'}/walks/${activeRequestId}/`, {
-        method: 'DELETE',
-      });
-      if (!response.ok) throw new Error('Failed to cancel request');
+      await api.delete(`/walk-requests/${activeRequestId}/`);
       
       setStep('request');
       setActiveRequestId(null);

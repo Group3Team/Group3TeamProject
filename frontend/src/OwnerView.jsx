@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
+import { locate } from 'leaflet.locatecontrol';
+import 'leaflet.locatecontrol/dist/L.Control.Locate.min.css';
 import api from './services/api';
 import {
   Box,
@@ -36,8 +37,68 @@ export default function OwnerView() {
   const [duration, setDuration] = useState(30);
   const [activeRequestId, setActiveRequestId] = useState(null);
   const [activeRequestData, setActiveRequestData] = useState(null);
-  const position = [51.505, -0.09];
+  const [pickupLocation, setPickupLocation] = useState(null);
   const navigate = useNavigate();
+
+  const mapRef = useRef(null);
+  const mapInstanceRef = useRef(null);
+  const walkerMarkerRef = useRef(null);
+
+  useEffect(() => {
+    if (mapInstanceRef.current) return;
+
+    const map = L.map(mapRef.current).setView(
+      [40.45952882340246, -98.73938654648938],
+      4,
+    );
+
+    mapInstanceRef.current = map;
+
+    L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution:
+        '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    }).addTo(map);
+
+    locate({
+      position: 'topleft',
+      setView: true,
+      keepCurrentZoomLevel: false,
+      showCompass: false,
+      onLocationError: function (err) {
+        alert(err.message);
+      },
+      timeout: 1000,
+      maximumAge: 1000,
+    }).addTo(map);
+
+    map.on('locationfound', function (e) {
+      L.marker(e.latlng).addTo(map).bindPopup('Your Location');
+    });
+
+    return () => {
+      map.remove();
+      mapInstanceRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map) return;
+    const showWalker = step === 'arriving' || step === 'in_progress';
+    if (showWalker && !walkerMarkerRef.current && pickupLocation) {
+      walkerMarkerRef.current = L.marker([
+        pickupLocation.lat + 0.004,
+        pickupLocation.lng + 0.01,
+      ])
+        .addTo(map)
+        .bindPopup('Walker');
+    }
+    if (!showWalker && walkerMarkerRef.current) {
+      walkerMarkerRef.current.remove();
+      walkerMarkerRef.current = null;
+    }
+  }, [step, pickupLocation]);
 
   useEffect(() => {
     let interval;
@@ -62,15 +123,44 @@ export default function OwnerView() {
     return () => clearInterval(interval);
   }, [activeRequestId, step]);
 
+  const geocodeAddress = async (address) => {
+    const token = import.meta.env.VITE_MAPBOX_KEY;
+    const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?limit=1&access_token=${token}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    const feature = data?.features?.[0];
+    if (!feature) return null;
+    const [lng, lat] = feature.center;
+    return { lng, lat };
+  };
+
   const requestWalk = async () => {
+    if (!ownerAddress.trim()) {
+      alert('Please enter a pickup address.');
+      return;
+    }
     try {
       setStep('searching');
+
+      const pickup = await geocodeAddress(ownerAddress);
+      if (!pickup) {
+        alert("Couldn't find that address. Please try a more specific one.");
+        setStep('request');
+        return;
+      }
+
+      setPickupLocation(pickup);
+      const map = mapInstanceRef.current;
+      if (map) {
+        L.marker([pickup.lat, pickup.lng]).addTo(map).bindPopup('Pickup');
+        map.setView([pickup.lat, pickup.lng], 14);
+      }
 
       const payload = {
         owner: 1,
         dogs: [],
         status: 'SEARCHING',
-        pickup_location: 'POINT(-0.09 51.505)',
+        pickup_location: `POINT(${pickup.lng} ${pickup.lat})`,
         owner_phone: ownerPhone,
         owner_address: ownerAddress,
         duration_minutes: parseInt(duration),
@@ -250,23 +340,16 @@ export default function OwnerView() {
           )}
         </Paper>
 
-        <Paper sx={{ p: 1, flex: 1, minHeight: 400 }}>
-          <Box sx={{ height: '100%', minHeight: 400, borderRadius: 2, overflow: 'hidden' }}>
-            <MapContainer center={position} zoom={13} style={{ height: '100%', width: '100%', minHeight: 400 }}>
-              <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              />
-              <Marker position={position}>
-                <Popup>Your Location</Popup>
-              </Marker>
-              {(step === 'arriving' || step === 'in_progress') && (
-                <Marker position={[51.509, -0.08]}>
-                  <Popup>Walker</Popup>
-                </Marker>
-              )}
-            </MapContainer>
-          </Box>
+        <Paper sx={{ p: 1, flex: 1, minHeight: 400, display: 'flex' }}>
+          <Box
+            ref={mapRef}
+            sx={{
+              flex: 1,
+              minHeight: 400,
+              borderRadius: 2,
+              overflow: 'hidden',
+            }}
+          />
         </Paper>
       </Stack>
     </Container>

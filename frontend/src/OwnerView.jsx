@@ -62,7 +62,6 @@ export default function OwnerView() {
         owner_phone: ownerPhone,
         owner_address: ownerAddress,
         duration_minutes: parseInt(duration),
-        dogs: [],
       };
 
 

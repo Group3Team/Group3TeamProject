@@ -171,13 +171,15 @@ export default function WalkerView() {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ py: 3 }}>
+    <Container maxWidth="xl" sx={{ py: 3 }}>
       <Stack
         direction={{ xs: 'column', md: 'row' }}
         spacing={3}
-        alignItems="stretch"
+        sx={{ alignItems: 'stretch' }}
       >
-        <Paper sx={{ p: 3, flex: 1 }}>
+          
+        <Stack spacing={3} sx={{ flex: 1, minWidth: 0 }}>
+        <Paper sx={{ p: 3 }}>
           <Button
             variant="outlined"
             size="small"
@@ -188,9 +190,9 @@ export default function WalkerView() {
             Back to Menu
           </Button>
 
-          <Weather />
+         
 
-          <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
+          <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
             <Typography variant="h3">Walker Dashboard</Typography>
             <Chip sx={{ ml: 1.5,}}
               label={isOnline ? 'Online' : 'Offline'}
@@ -199,7 +201,7 @@ export default function WalkerView() {
           </Stack>
 
           {!request && (
-            <Stack spacing={2} alignItems="center" sx={{ py: 2, textAlign: 'center' }}>
+            <Stack spacing={2} sx={{ alignItems: 'center', py: 2, textAlign: 'center' }}>
               <Button
                 variant="contained"
                 color={isOnline ? 'error' : 'success'}
@@ -279,7 +281,7 @@ export default function WalkerView() {
           )}
         </Paper>
 
-        <Paper sx={{ p: 1, flex: 1, minHeight: 400, display: 'flex', flexDirection: 'column' }}>
+        <Paper sx={{ p: 1, minHeight: 400, display: 'flex', flexDirection: 'column' }}>
           {routeInfo && (
             <Box sx={{ p: 2 }}>
               <Stack direction="row" spacing={3} sx={{ mb: 1 }}>
@@ -292,7 +294,7 @@ export default function WalkerView() {
                   <ListItem key={index} divider>
                     <ListItemText
                       primary={
-                        <Stack direction="row" spacing={1} alignItems="center">
+                        <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
                           {step.maneuver.modifier === 'left' && <ArrowBackRoundedIcon fontSize="small" />}
                           {step.maneuver.modifier === 'right' && <ArrowForwardRoundedIcon fontSize="small" />}
                           <span>{step.maneuver.instruction}</span>
@@ -315,7 +317,11 @@ export default function WalkerView() {
             }}
           />
         </Paper>
-      </Stack>
+        </Stack>
+        <Box sx={{ pl:2, width: { xs: '100%', md: 220 }, flexShrink: 0 }}>
+          <Weather />
+        </Box>
+       </Stack>
     </Container>
   );
 }

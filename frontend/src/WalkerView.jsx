@@ -6,11 +6,26 @@ import { locate } from "leaflet.locatecontrol";
 import "leaflet.locatecontrol/dist/L.Control.Locate.min.css";
 import Weather from "./components/Weather";
 import api from './services/api';
-
+import {
+  Box,
+  Container,
+  Paper,
+  Stack,
+  Typography,
+  Button,
+  Chip,
+  Divider,
+  List,
+  ListItem,
+  ListItemText,
+} from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
+import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
 
 export default function WalkerView() {
   const [isOnline, setIsOnline] = useState(false);
-  const [request, setRequest] = useState(null); // 'pending', 'accepted', 'in_progress'
+  const [request, setRequest] = useState(null);
   const [activeRequestData, setActiveRequestData] = useState(null);
   const [, setWalkerLocation] = useState('');
   const [routeInfo, setRouteInfo] = useState(null);
@@ -20,7 +35,6 @@ export default function WalkerView() {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
 
-  // Poll for new requests when online
   useEffect(() => {
     let interval;
     if (isOnline && !request) {
@@ -28,10 +42,8 @@ export default function WalkerView() {
         try {
           const response = await api.get('/walk-requests/');
           const data = response.data;
-
-          // Find the most recent 'SEARCHING' request
           const pending = data.filter(r => r.status === 'SEARCHING').sort((a, b) => b.id - a.id)[0];
-          
+
           if (pending) {
             setActiveRequestData(pending);
             setRequest('pending');
@@ -41,8 +53,8 @@ export default function WalkerView() {
         }
       };
 
-      fetchRequests(); // Initial fetch
-      interval = setInterval(fetchRequests, 5000); // Poll every 5 seconds
+      fetchRequests();
+      interval = setInterval(fetchRequests, 5000);
     }
     return () => clearInterval(interval);
   }, [isOnline, request]);
@@ -53,7 +65,7 @@ export default function WalkerView() {
       const response = await api.patch(`/walk-requests/${activeRequestData.id}/`, { status: newStatus });
       const updatedData = response.data;
       setActiveRequestData(updatedData);
-      
+
       if (newStatus === 'ACCEPTED') setRequest('accepted');
       if (newStatus === 'IN_PROGRESS') setRequest('in_progress');
       if (newStatus === 'COMPLETED') {
@@ -93,18 +105,17 @@ export default function WalkerView() {
       timeout: 1000,
       maximumAge: 1000,
     }).addTo(map);
-   
-      map.on("locationtimeout", function (e) {
-        console.log("Location timeout count:", e.count);
-        // Provide custom feedback or retry logic
-      });
 
-      map.on("locationfound", function (e) {
-        setWalkerLocation(e.latlng)
-  console.log("Location found:", e.latlng);
-  console.log("Accuracy:", e.accuracy, "meters");
-});
-      
+    map.on("locationtimeout", function (e) {
+      console.log("Location timeout count:", e.count);
+    });
+
+    map.on("locationfound", function (e) {
+      setWalkerLocation(e.latlng);
+      console.log("Location found:", e.latlng);
+      console.log("Accuracy:", e.accuracy, "meters");
+    });
+
     return () => {
       map.remove();
       mapInstanceRef.current = null;
@@ -123,7 +134,7 @@ export default function WalkerView() {
       const [endLng, endLat] = data.waypoints[1].location;
 
       L.marker([startLat, startLng]).addTo(map).bindPopup("Start");
-      L.marker([endLat, endLng], ).addTo(map).bindPopup("End");
+      L.marker([endLat, endLng]).addTo(map).bindPopup("End");
 
       const steps = data.routes[0].legs[0].steps;
 
@@ -160,211 +171,151 @@ export default function WalkerView() {
   };
 
   return (
-    <div className="grid-2 animate-fade-in">
-      <div className="glass-panel">
-        <button
-          className="btn btn-outline"
-          onClick={() => navigate("/dashboard")}
-          style={{
-            marginBottom: "1.5rem",
-            padding: "0.4rem 1rem",
-            fontSize: "0.9rem",
-          }}
-        >
-          ← Back to Menu
-        </button>
-
-        <Weather />
-
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: "2rem",
-          }}
-        >
-          <h2>Walker Dashboard</h2>
-          <div
-            className="status-badge"
-            style={{
-              background: isOnline
-                ? "var(--success-color)"
-                : "var(--background-dark)",
-              margin: 0,
-            }}
+    <Container maxWidth="lg" sx={{ py: 3 }}>
+      <Stack
+        direction={{ xs: 'column', md: 'row' }}
+        spacing={3}
+        alignItems="stretch"
+      >
+        <Paper sx={{ p: 3, flex: 1 }}>
+          <Button
+            variant="outlined"
+            size="small"
+            startIcon={<ArrowBackIcon />}
+            onClick={() => navigate("/dashboard")}
+            sx={{ mb: 2 }}
           >
-            {isOnline ? "Online" : "Offline"}
-          </div>
-        </div>
+            Back to Menu
+          </Button>
 
-        {!request && (
-          <div style={{ textAlign: "center", padding: "2rem 0" }}>
-            <button
-              className="btn"
-              style={{
-                background: isOnline ? "#d63031" : "var(--success-color)",
-                width: "100%",
-                padding: "1rem",
-                fontSize: "1.2rem",
-              }}
-              onClick={toggleOnline}
-            >
-              {isOnline ? "Go Offline" : "Go Online to Receive Requests"}
-            </button>
-            {isOnline && (
-              <p
-                style={{ marginTop: "1rem", color: "var(--background-light)" }}
-              >
-                Looking for nearby dogs...
-              </p>
-            )}
-          </div>
-        )}
+          <Weather />
 
-        {request === "pending" && activeRequestData && (
-          <div
-            className="glass-panel"
-            style={{
-              background: "rgba(108, 92, 231, 0.2)",
-              border: "1px solid var(--primary-color)",
-            }}
-          >
-            <h3>New Walk Request!</h3>
-            <p>
-              <strong>Pickup Address:</strong> {activeRequestData.owner_address || 'Not provided'}
-            </p>
-            <p>
-              <strong>Phone:</strong> {activeRequestData.owner_phone || 'Not provided'}
-            </p>
-            <p>
-              <strong>Duration:</strong> {activeRequestData.duration_minutes || '30'} mins
-            </p>
-            <p>
-              <strong>Status:</strong> {activeRequestData.status}
-            </p>
-            <div style={{ display: "flex", gap: "1rem", marginTop: "1.5rem" }}>
-              <button
-                className="btn"
-                style={{ flex: 1, background: "var(--success-color)" }}
-                onClick={() => {
-                  updateRequestStatus('ACCEPTED');
-                  getRoute("-111.739,40.3805", "-111.7534,40.3661");
-                }}
-              >
-                Accept
-              </button>
-              <button
-                className="btn"
-                style={{ flex: 1, background: "#d63031" }}
-                onClick={() => {
-                  setRequest(null);
-                  setActiveRequestData(null);
-                }}
-              >
-                Decline
-              </button>
-            </div>
-          </div>
-        )}
+          <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
+            <Typography variant="h3">Walker Dashboard</Typography>
+            <Chip sx={{ ml: 1.5,}}
+              label={isOnline ? 'Online' : 'Offline'}
+              color={isOnline ? 'success' : 'default'}
+            />
+          </Stack>
 
-        {request === "accepted" && (
-          <div>
-            <h3>Head to Pickup</h3>
-            <p style={{ marginBottom: "1.5rem" }}>
-              The owner has been notified you are arriving.
-            </p>
-            <button
-              className="btn"
-              style={{ width: "100%", marginBottom: "1rem" }}
-              onClick={() => updateRequestStatus('IN_PROGRESS')}
-            >
-              Start Walk
-            </button>
-          </div>
-        )}
-
-        {request === "in_progress" && (
-          <div>
-            <div
-              className="status-badge"
-              style={{ background: "var(--success-color)" }}
-            >
-              Walk in Progress
-            </div>
-            <div style={{ margin: "2rem 0" }}>
-              <button
-                className="btn"
-                style={{
-                  width: "100%",
-                  marginBottom: "1rem",
-                  background: "var(--secondary-color)",
-                }}
+          {!request && (
+            <Stack spacing={2} alignItems="center" sx={{ py: 2, textAlign: 'center' }}>
+              <Button
+                variant="contained"
+                color={isOnline ? 'error' : 'success'}
+                size="large"
+                fullWidth
+                onClick={toggleOnline}
+                sx={{ py: 1.5, fontSize: '1.1rem' }}
               >
-                Upload Photo Update
-              </button>
-              <button
-                className="btn"
-                style={{ width: "100%" }}
-                onClick={() => updateRequestStatus('COMPLETED')}
-              >
-                Complete Walk
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-
-      <div className="glass-panel" style={{ padding: "1rem" }}>
-        <div style={{ margin: "1rem" }}>
-          {routeInfo && (
-            <ul style={{ listStyle: "none", padding: 0 }}>
-              <li style={{ borderBottom: "solid gray", borderBottomWidth: ".5px", padding: "0.5rem 0" }}>
-                <p style={{ margin: 0 }}>
-                  <strong>Distance:</strong> {routeInfo.miles} mi
-                </p>
-                <p style={{ margin: 0 }}>
-                  <strong>Time:</strong> {routeInfo.minutes} min
-                </p>
-              </li>
-              {routeInfo.steps.map((step, index) => (
-                <li
-                  key={index}
-                  style={{ borderBottom: "solid gray", borderBottomWidth: ".5px", padding: "0.5rem 0" }}
-                >
-                  <p style={{ margin: 0 }}>
-                    {(step.maneuver.modifier)==='left'?
-                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#fff"><path d="M600-160v-360H272l64 64-56 56-160-160 160-160 56 56-64 64h328q33 0 56.5 23.5T680-520v360h-80Z"/></svg>
-                    : <></>} 
-                     {(step.maneuver.modifier)==='right'? 
-                     <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#fff"><path d="M280-160v-360q0-33 23.5-56.5T360-600h328l-64-64 56-56 160 160-160 160-56-56 64-64H360v360h-80Z"/></svg>
-                    : <></>} {step.maneuver.instruction}
-                  </p>                
-                </li>
-              ))}
-            </ul>
+                {isOnline ? 'Go Offline' : 'Go Online to Receive Requests'}
+              </Button>
+              {isOnline && (
+                <Typography color="text.secondary">
+                  Looking for nearby dogs...
+                </Typography>
+              )}
+            </Stack>
           )}
-        </div>
-        <div className="map-container">
-          <div ref={mapRef} style={{ height: "100%", width: "100%" }}></div>
-        </div>
-      </div>
-    </div>
+
+          {request === 'pending' && activeRequestData && (
+            <Paper variant="outlined" sx={{ p: 2, borderColor: 'primary.main', bgcolor: 'rgba(53, 113, 121, 0.06)' }}>
+              <Typography variant="h5" sx={{ mb: 1.5 }}>New Walk Request!</Typography>
+              <Stack spacing={0.5} sx={{ mb: 2 }}>
+                <Typography><strong>Pickup Address:</strong> {activeRequestData.owner_address || 'Not provided'}</Typography>
+                <Typography><strong>Phone:</strong> {activeRequestData.owner_phone || 'Not provided'}</Typography>
+                <Typography><strong>Duration:</strong> {activeRequestData.duration_minutes || '30'} mins</Typography>
+                <Typography><strong>Status:</strong> {activeRequestData.status}</Typography>
+              </Stack>
+              <Stack direction="row" spacing={2}>
+                <Button
+                  variant="contained"
+                  color="success"
+                  fullWidth
+                  onClick={() => {
+                    updateRequestStatus('ACCEPTED');
+                    getRoute('-111.739,40.3805', '-111.7534,40.3661');
+                  }}
+                >
+                  Accept
+                </Button>
+                <Button
+                  variant="contained"
+                  color="error"
+                  fullWidth
+                  onClick={() => {
+                    setRequest(null);
+                    setActiveRequestData(null);
+                  }}
+                >
+                  Decline
+                </Button>
+              </Stack>
+            </Paper>
+          )}
+
+          {request === 'accepted' && (
+            <Stack spacing={2}>
+              <Typography variant="h5">Head to Pickup</Typography>
+              <Typography color="text.secondary">
+                The owner has been notified you are arriving.
+              </Typography>
+              <Button variant="contained" fullWidth onClick={() => updateRequestStatus('IN_PROGRESS')}>
+                Start Walk
+              </Button>
+            </Stack>
+          )}
+
+          {request === 'in_progress' && (
+            <Stack spacing={2}>
+              <Chip label="Walk in Progress" color="success" />
+              <Button variant="contained" color="secondary" fullWidth>
+                Upload Photo Update
+              </Button>
+              <Button variant="contained" fullWidth onClick={() => updateRequestStatus('COMPLETED')}>
+                Complete Walk
+              </Button>
+            </Stack>
+          )}
+        </Paper>
+
+        <Paper sx={{ p: 1, flex: 1, minHeight: 400, display: 'flex', flexDirection: 'column' }}>
+          {routeInfo && (
+            <Box sx={{ p: 2 }}>
+              <Stack direction="row" spacing={3} sx={{ mb: 1 }}>
+                <Typography><strong>Distance:</strong> {routeInfo.miles} mi</Typography>
+                <Typography><strong>Time:</strong> {routeInfo.minutes} min</Typography>
+              </Stack>
+              <Divider />
+              <List dense sx={{ maxHeight: 200, overflowY: 'auto' }}>
+                {routeInfo.steps.map((step, index) => (
+                  <ListItem key={index} divider>
+                    <ListItemText
+                      primary={
+                        <Stack direction="row" spacing={1} alignItems="center">
+                          {step.maneuver.modifier === 'left' && <ArrowBackRoundedIcon fontSize="small" />}
+                          {step.maneuver.modifier === 'right' && <ArrowForwardRoundedIcon fontSize="small" />}
+                          <span>{step.maneuver.instruction}</span>
+                        </Stack>
+                      }
+                    />
+                  </ListItem>
+                ))}
+              </List>
+              <Divider />
+            </Box>
+          )}
+          <Box
+            ref={mapRef}
+            sx={{
+              flex: 1,
+              minHeight: 400,
+              borderRadius: 2,
+              overflow: 'hidden',
+            }}
+          />
+        </Paper>
+      </Stack>
+    </Container>
   );
 }
-
-
-   {/* <MapContainer center={position} zoom={13} style={{ height: '100%', width: '100%' }}>
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-            <Marker position={position}>
-              <Popup>You</Popup>
-            </Marker>
-            {(request === 'pending' || request === 'accepted') && (
-              <Marker position={[51.505, -0.09]}>
-                <Popup>Pickup Location</Popup>
-              </Marker>
-            )}
-          </MapContainer> */}

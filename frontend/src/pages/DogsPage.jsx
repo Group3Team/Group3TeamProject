@@ -1,5 +1,13 @@
 import { useEffect, useState } from 'react';
 import { getDogs } from '../services/api';
+import {
+  Container,
+  Typography,
+  Card,
+  CardContent,
+  Stack,
+  Alert,
+} from '@mui/material';
 
 export default function DogsPage() {
   const [dogs, setDogs] = useState([]);
@@ -9,32 +17,28 @@ export default function DogsPage() {
   }, []);
 
   return (
-    <div style={{ padding: '3rem 2rem', maxWidth: '800px', margin: '0 auto' }}>
-      <h1>My Dogs 🐕</h1>
-      <p style={{ margin: '0.5rem 0 2rem' }}>All dogs registered to your account.</p>
+    <Container maxWidth="md" sx={{ py: 4 }}>
+      <Typography variant="h1" sx={{ fontSize: '2.25rem' }}>My Dogs 🐕</Typography>
+      <Typography color="text.secondary" sx={{ mt: 0.5, mb: 3 }}>
+        All dogs registered to your account.
+      </Typography>
 
       {dogs.length === 0 ? (
-        <div style={emptyBox}>No dogs found. Add your first dog!</div>
+        <Alert severity="info" sx={{ fontWeight: 600 }}>
+          No dogs found. Add your first dog!
+        </Alert>
       ) : (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
+        <Stack direction="row" spacing={2} useFlexGap flexWrap="wrap">
           {dogs.map(d => (
-            <div key={d.id} style={cardStyle}>
-              <h2>{d.name}</h2>
-              <p>{d.breed} — {d.size}</p>
-            </div>
+            <Card key={d.id} sx={{ minWidth: 180, flex: 1 }}>
+              <CardContent>
+                <Typography variant="h5">{d.name}</Typography>
+                <Typography color="text.secondary">{d.breed} — {d.size}</Typography>
+              </CardContent>
+            </Card>
           ))}
-        </div>
+        </Stack>
       )}
-    </div>
+    </Container>
   );
 }
-
-const cardStyle = {
-  backgroundColor: '#fff', borderRadius: '12px', padding: '1.2rem 1.5rem',
-  boxShadow: '0 2px 8px rgba(0,0,0,0.08)', minWidth: '180px', flex: '1',
-};
-
-const emptyBox = {
-  backgroundColor: '#d8f3dc', borderRadius: '12px', padding: '1.5rem',
-  color: '#1b4332', fontWeight: '600',
-};

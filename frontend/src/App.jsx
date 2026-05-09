@@ -91,7 +91,7 @@ function Landing() {
         spacing={{ xs: 4, md: 6 }}
         alignItems="center"
       >
-        <Box sx={{ flex: 1 }}>
+        <Box sx={{ flex: 1, alignSelf: 'center' }}>
           <Typography variant="h1" sx={{ mb: 2, fontSize: { xs: '2.25rem', md: '3rem' } }}>
             Premium Dog Walking on Demand.
           </Typography>
@@ -103,12 +103,12 @@ function Landing() {
             <Button component={RouterLink} to="/login" variant="outlined" size="large">Log In</Button>
           </Stack>
         </Box>
-        <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
+        <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center', alignSelf: 'center' }}>
           <Box
             component="img"
-            src="/hero.png"
-            alt="Guillermo Trigger!"
-            sx={{ maxWidth: '100%', height: 'auto', borderRadius: 3 }}
+            src="/dog.jpg"
+            alt=""
+            sx={{ maxWidth: '75%', height: 'auto', borderRadius: 3 }}
           />
         </Box>
       </Stack>

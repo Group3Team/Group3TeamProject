@@ -192,7 +192,7 @@ export default function WalkerView() {
 
           <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
             <Typography variant="h3">Walker Dashboard</Typography>
-            <Chip
+            <Chip sx={{ ml: 1.5,}}
               label={isOnline ? 'Online' : 'Offline'}
               color={isOnline ? 'success' : 'default'}
             />

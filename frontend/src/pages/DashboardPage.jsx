@@ -50,15 +50,15 @@ export default function DashboardPage() {
 
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
+      <Typography sx={{ mb: 3 }} variant="h3">Dashboard</Typography>
       <Paper sx={{ p: 3, mb: 3 }}>
         <Stack spacing={2} alignItems="flex-start">
           <Box>
-            <Typography variant="h3">Dashboard</Typography>
             <Typography color="text.secondary" sx={{ mt: 0.25 }}>
-              Welcome, <strong>{user?.username}</strong> · {user?.role}
+              Welcome, <strong>{user?.username}</strong>
             </Typography>
           </Box>
-          <Button variant="outlined" onClick={logout}>Log Out</Button>
+          
         </Stack>
       </Paper>
 
@@ -155,13 +155,11 @@ function OwnerDashboard() {
           {error}
         </Alert>
       )}
-
       <Paper sx={{ p: 3 }}>
-        <Stack spacing={2} alignItems="flex-start" sx={{ mb: 2 }}>
+        <Stack spacing={2} direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
           <Typography variant="h4">My Dogs</Typography>
           <Button variant="contained" startIcon={<AddIcon />} onClick={openAdd}>Add Dog</Button>
         </Stack>
-
         {showForm && (
           <Paper variant="outlined" component="form" onSubmit={handleSave} sx={{ p: 2.5, mb: 2.5 }}>
             <Typography variant="h5" sx={{ mb: 2 }}>

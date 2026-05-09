@@ -58,7 +58,7 @@ function Header() {
           <Box component="span" sx={{ color: 'primary.main' }}>GO</Box>
         </Typography>
 
-        <Stack direction="row" spacing={1} alignItems="center">
+        <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
           {isLoggedIn ? (
             <>
               <Button component={RouterLink} to="/dashboard" variant="text" color="inherit">Dashboard</Button>
@@ -89,7 +89,7 @@ function Landing() {
       <Stack
         direction={{ xs: 'column', md: 'row' }}
         spacing={{ xs: 4, md: 6 }}
-        alignItems="center"
+        sx={{ alignItems: 'center' }}
       >
         <Box sx={{ flex: 1, alignSelf: 'center' }}>
           <Typography variant="h1" sx={{ mb: 2, fontSize: { xs: '2.25rem', md: '3rem' } }}>

@@ -15,7 +15,7 @@ export default function ProfileWalker() {
 
       <Paper sx={{ p: 3 }}>
         <Stack spacing={3}>
-          <Stack direction="row" spacing={2} alignItems="center">
+          <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
             <Avatar sx={{ width: 64, height: 64, bgcolor: 'primary.main' }} />
             <Box>
               <Typography variant="caption" color="text.secondary">Name</Typography>

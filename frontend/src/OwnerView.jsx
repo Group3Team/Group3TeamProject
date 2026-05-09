@@ -103,7 +103,7 @@ export default function OwnerView() {
       <Stack
         direction={{ xs: 'column', md: 'row' }}
         spacing={3}
-        alignItems="stretch"
+        sx={{ alignItems: 'stretch' }}
       >
         <Paper sx={{ p: 3, flex: 1 }}>
           <Button
@@ -156,7 +156,7 @@ export default function OwnerView() {
           )}
 
           {step === 'searching' && (
-            <Stack spacing={3} alignItems="center" sx={{ py: 4, textAlign: 'center' }}>
+            <Stack spacing={3} sx={{ alignItems: 'center', py: 4, textAlign: 'center' }}>
               <Chip label="Searching..." color="warning" />
               <Typography variant="h5">Finding the best walker nearby...</Typography>
               <Box sx={{ width: '100%' }}>
@@ -173,7 +173,7 @@ export default function OwnerView() {
               <Chip label="Walker Arriving" color="primary" />
 
               <Paper variant="outlined" sx={{ p: 2 }}>
-                <Stack direction="row" spacing={2} alignItems="center">
+                <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
                   <Avatar src="/walker.png" sx={{ width: 56, height: 56 }} />
                   <Box>
                     <Typography variant="h5" sx={{ mb: 0.25 }}>
@@ -241,7 +241,7 @@ export default function OwnerView() {
           )}
 
           {step === 'completed' && (
-            <Stack spacing={2} alignItems="center" sx={{ textAlign: 'center', py: 2 }}>
+            <Stack spacing={2} sx={{ alignItems: 'center', textAlign: 'center', py: 2 }}>
               <Chip label="Completed" color="success" />
               <Typography variant="h4">Walk Finished!</Typography>
               <Typography>Payment of $25.00 has been released.</Typography>

@@ -52,7 +52,7 @@ export default function DashboardPage() {
     <Container maxWidth="md" sx={{ py: 4 }}>
       <Typography sx={{ mb: 3 }} variant="h3">Dashboard</Typography>
       <Paper sx={{ p: 3, mb: 3 }}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2}>
+        <Stack direction="row" gap={2} sx={{ justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' }}>
           <Typography color="text.secondary">
             Welcome, <strong>{user?.username}</strong>
             {user?.role != null ? <> · {user.role}</> : null}
@@ -155,7 +155,7 @@ function OwnerDashboard() {
         </Alert>
       )}
       <Paper sx={{ p: 3 }}>
-        <Stack spacing={2} direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
+        <Stack spacing={2} direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
           <Typography variant="h4">My Dogs</Typography>
           <Button variant="contained" startIcon={<AddIcon />} onClick={openAdd}>Add Dog</Button>
         </Stack>
@@ -193,7 +193,7 @@ function OwnerDashboard() {
             <Typography color="text.secondary" sx={{ mt: 1 }}>Loading your dogs...</Typography>
           </Box>
         ) : dogs.length === 0 ? (
-          <Stack alignItems="center" sx={{ py: 5 }}>
+          <Stack sx={{ alignItems: 'center', py: 5 }}>
             <PetsIcon sx={{ fontSize: 56, color: 'text.disabled', mb: 1 }} />
             <Typography color="text.secondary">No dogs yet. Add your first dog above!</Typography>
           </Stack>
@@ -284,7 +284,7 @@ function WalkerDashboard() {
       )}
 
       <Paper sx={{ p: 3 }}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
+        <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
           <Typography variant="h4">My Walk Requests</Typography>
           <IconButton onClick={fetchRequests} aria-label="Refresh">
             <RefreshIcon />
@@ -297,7 +297,7 @@ function WalkerDashboard() {
             <Typography color="text.secondary" sx={{ mt: 1 }}>Loading walk requests...</Typography>
           </Box>
         ) : requests.length === 0 ? (
-          <Stack alignItems="center" sx={{ py: 5 }}>
+          <Stack sx={{ alignItems: 'center', py: 5 }}>
             <DirectionsWalkIcon sx={{ fontSize: 56, color: 'text.disabled', mb: 1 }} />
             <Typography color="text.secondary">No walk requests assigned to you yet.</Typography>
           </Stack>
@@ -305,7 +305,7 @@ function WalkerDashboard() {
           <Stack spacing={2}>
             {requests.map((req) => (
               <Paper key={req.id} variant="outlined" sx={{ p: 2 }}>
-                <Stack direction="row" justifyContent="space-between" alignItems="flex-start" flexWrap="wrap" gap={1} sx={{ mb: 1.5 }}>
+                <Stack direction="row" gap={1} sx={{ justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', mb: 1.5 }}>
                   <Box>
                     <Typography sx={{ fontWeight: 600 }}>Walk #{req.id}</Typography>
                     <Typography variant="body2" color="text.secondary">
@@ -318,7 +318,7 @@ function WalkerDashboard() {
                     color={STATUS_COLORS[req.status] || 'default'}
                   />
                 </Stack>
-                <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                <Stack direction="row" spacing={1} useFlexGap sx={{ flexWrap: 'wrap' }}>
                   {req.status === 'SEARCHING' && (
                     <Button size="small" variant="contained" onClick={() => updateStatus(req.id, 'ACCEPTED')}>Accept</Button>
                   )}

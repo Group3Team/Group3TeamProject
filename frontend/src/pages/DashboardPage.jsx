@@ -101,8 +101,6 @@ function OwnerDashboard() {
 
   const fetchDogs = useCallback(async () => {
     try {
-      setDogs([]);
-      setError('');
       const { data } = await api.get('/dogs/');
       setDogs(data);
     } catch {
@@ -112,7 +110,7 @@ function OwnerDashboard() {
     }
   }, []);
 
-  useEffect(() => { fetchDogs(); return () => {}; }, [fetchDogs]);
+  useEffect(() => { fetchDogs(); }, [fetchDogs]);
 
   const openAdd = () => { setForm(emptyDogForm); setEditingId(null); setShowForm(true); };
   const openEdit = (dog) => {

@@ -23,7 +23,6 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
 
-
 export default function WalkerView() {
   const [isOnline, setIsOnline] = useState(false);
   const [request, setRequest] = useState(null);
@@ -43,8 +42,6 @@ export default function WalkerView() {
         try {
           const response = await api.get('/walk-requests/');
           const data = response.data;
-
-          // Find the most recent 'SEARCHING' request
           const pending = data.filter(r => r.status === 'SEARCHING').sort((a, b) => b.id - a.id)[0];
 
           if (pending) {

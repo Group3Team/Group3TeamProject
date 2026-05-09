@@ -3,7 +3,7 @@ from django.urls import path, include
 from django.contrib import admin
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from users.views import UserViewSet, WalkerProfileViewSet, OwnerProfileViewSet, register, user_me
+from users.views import UserViewSet, WalkerProfileViewSet, OwnerProfileViewSet, register
 from walks.views import DogViewSet, WalkRequestViewSet
 from messaging.views import MessageViewSet
 
@@ -17,7 +17,6 @@ router.register(r'messages', MessageViewSet)          # Moved to root for simpli
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/users/me/', user_me),
     path('api/', include(router.urls)),
     path('api/auth/register/', register),
     path('api/auth/token/', TokenObtainPairView.as_view()),

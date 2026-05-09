@@ -21,7 +21,6 @@ Dockerfile*
 docker-compose*.yml
 docker-compose*.yml~
 Dockerfile~
-rsync.sh
 
 # 🐍 Python Bytecode & Compiled
 __pycache__/
@@ -61,8 +60,6 @@ wheels/
 share/python-wheels/
 *.manifest
 *.spec
-.vite/
-.so
 
 # 🐍 Package Managers & Caches
 node_modules/
@@ -115,7 +112,6 @@ staticfiles/
 instance/
 .webassets-cache
 *.log
-*.log*
 logs/
 log/
 *.mo
@@ -137,7 +133,7 @@ log/
 ._*
 Thumbs.db
 ehthumbs.db
-Desktop.iniss
+Desktop.ini
 
 # 🗃️ Temporary & Scratch Files
 tmp/

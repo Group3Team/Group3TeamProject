@@ -1,13 +1,6 @@
-services:
-  redis:
-    image: redis:7-alpine
-    container_name: django-redis
-    ports:
-      - "6379"
-    networks:
-      - app-network
-    restart: unless-stopped
+#version: '3.8'
 
+services:
   backend:
     build:
       context: .
@@ -15,7 +8,6 @@ services:
     container_name: django-backend
     ports:
       - "8001:8000"
-      - "8765:8765"
     volumes:
       - ./backend:/app
       - static_volume:/app/static
@@ -27,14 +19,13 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - REDIS_URL=${REDIS_URL:-redis://redis:6379}
       - DB_HOST=db
       - DB_PORT=5432
     depends_on:
       - db
-      - redis
     networks:
       - app-network
+    command: ["gunicorn", "--bind", "0.0.0.0:8000", "--access-logfile", "-", "wsgi:application"]
     restart: unless-stopped
     logging:
       driver: "json-file"
@@ -54,21 +45,21 @@ services:
       - /app/node_modules
     networks:
       - app-network
-    restart: unless-stopped
 
   db:
-    image: imresamu/postgis:18-3.6
+    image: imresamu/postgis:18-3.6 # arm support, so works on my mac. 
     container_name: postgres-db
     environment:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
-      - postgres_data:/var/lib/postgresql
+      - postgres_data:/var/lib/postgresql  # postgis/postgis:18-3.6 Uses VOLUME path /var/lib/postgresql
     ports:
       - "5433:5432"
     networks:
       - app-network
+    # Add health check for database readiness
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
       interval: 10s

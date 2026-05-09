@@ -1,54 +1,48 @@
 import { useAuth } from '../context/AuthContext';
-import {
-  Box,
-  Container,
-  Typography,
-  Paper,
-  Stack,
-  Avatar,
-  Divider,
-} from '@mui/material';
+
 
 export default function ProfileOwner() {
-  const { user } = useAuth();
+    const { user } = useAuth();
+
+    console.log(user)
+    
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
-      <Typography variant="h2" sx={{ mb: 3 }}>Profile</Typography>
+    <div className="profile-page">
+      <h2>Profile</h2>
 
-      <Paper sx={{ p: 3 }}>
-        <Stack spacing={3}>
-          <Stack direction="row" spacing={2} alignItems="center">
-            <Avatar sx={{ width: 64, height: 64, bgcolor: 'primary.main' }}>
-              {user?.username?.[0]?.toUpperCase()}
-            </Avatar>
-            <Box>
-              <Typography variant="h5">{user?.username}</Typography>
-              <Typography color="text.secondary">{user?.email}</Typography>
-            </Box>
-          </Stack>
+      <div className="glass-panel">
+        {/* Owner */}
+        <div className="profile-section">
+          <img src="" alt="" className="profile-avatar" />
+          <div className="profile-section-body">
+            <p className="profile-label">{user.username}</p>
+            <p className="profile-value"></p>
+            <p className="profile-label">{user.email}</p>
+            <p className="profile-value"></p>
+          </div>
+        </div>
 
-          {user?.role === 'OWNER' && (
-            <>
-              <Divider />
-              <Stack direction="row" spacing={2} alignItems="center">
-                <Avatar sx={{ width: 48, height: 48 }} />
-                <Box>
-                  <Typography variant="caption" color="text.secondary">Dog name</Typography>
-                  <Typography>—</Typography>
-                </Box>
-              </Stack>
-            </>
-          )}
+        {/* Dog */}
+        {user?.role === 'OWNER' ? (
+        <div className="profile-section">
+          <img src="" alt="" className="profile-thumb" />
+          <div className="profile-section-body">
+            <p className="profile-label">Dog name</p>
+            <p className="profile-value"></p>
+          </div>
+        </div>
+        ) : (<></>)}
 
-          <Divider />
-          <Box>
-            <Typography variant="h5" sx={{ mb: 1 }}>Settings</Typography>
-            <Typography variant="caption" color="text.secondary">Username</Typography>
-            <Typography>{user?.username}</Typography>
-          </Box>
-        </Stack>
-      </Paper>
-    </Container>
+        {/* Settings */}
+        <div className="profile-section profile-settings">
+          <div className="profile-section-body">
+            <h3>Settings</h3>
+            <p className="profile-label">Username: {user.username} </p>
+            <p className="profile-value"></p>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

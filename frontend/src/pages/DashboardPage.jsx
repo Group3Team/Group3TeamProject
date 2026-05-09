@@ -52,13 +52,12 @@ export default function DashboardPage() {
     <Container maxWidth="md" sx={{ py: 4 }}>
       <Typography sx={{ mb: 3 }} variant="h3">Dashboard</Typography>
       <Paper sx={{ p: 3, mb: 3 }}>
-        <Stack spacing={2} alignItems="flex-start">
-          <Box>
-            <Typography color="text.secondary" sx={{ mt: 0.25 }}>
-              Welcome, <strong>{user?.username}</strong>
-            </Typography>
-          </Box>
-          
+        <Stack direction="row" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2}>
+          <Typography color="text.secondary">
+            Welcome, <strong>{user?.username}</strong>
+            {user?.role != null ? <> · {user.role}</> : null}
+          </Typography>
+          <Button variant="outlined" onClick={logout}>Log Out</Button>
         </Stack>
       </Paper>
 

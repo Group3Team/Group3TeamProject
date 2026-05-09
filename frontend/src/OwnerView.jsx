@@ -18,6 +18,7 @@ import {
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
+// Fix for default marker icon in react-leaflet
 import L from 'leaflet';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
@@ -74,10 +75,13 @@ export default function OwnerView() {
         owner_phone: ownerPhone,
         owner_address: ownerAddress,
         duration_minutes: parseInt(duration),
+        dogs: [],
       };
+
 
       const response = await api.post('/walk-requests/', payload);
       const data = response.data;
+
       setActiveRequestId(data.id);
     } catch (error) {
       console.error('Error requesting walk:', error);
@@ -89,6 +93,7 @@ export default function OwnerView() {
   const cancelRequest = async () => {
     if (!activeRequestId) return;
     try {
+
       await api.delete(`/walk-requests/${activeRequestId}/`);
       setStep('request');
       setActiveRequestId(null);

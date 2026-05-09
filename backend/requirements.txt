@@ -16,3 +16,5 @@ urllib3==2.6.3
 google-genai
 djangorestframework-simplejwt==5.5.1
 whitenoise==6.8.2
+channels-redis==4.2.0
+daphne==4.1.0

@@ -1,4 +1,4 @@
-import { Routes, Route, Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import PrivateRoute from './components/PrivateRoute';
 import OwnerView from './OwnerView';
@@ -8,33 +8,7 @@ import SignupPage from './pages/SignupPage';
 import RolePage from './pages/RolePage';
 import DashboardPage from './pages/DashboardPage';
 import ProfileOwner from './pages/ProfileOwner';
-import {
-  AppBar,
-  Toolbar,
-  Box,
-  Container,
-  Button,
-  IconButton,
-  Typography,
-  Stack,
-  Tooltip,
-} from '@mui/material';
-import LightModeIcon from '@mui/icons-material/LightMode';
-import DarkModeIcon from '@mui/icons-material/DarkMode';
-import { useColorMode } from './ColorMode';
 import './index.css';
-
-function ColorModeToggle() {
-  const { mode, toggle } = useColorMode();
-  const isDark = mode === 'dark';
-  return (
-    <Tooltip title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}>
-      <IconButton onClick={toggle} color="inherit" aria-label="Toggle color mode">
-        {isDark ? <LightModeIcon /> : <DarkModeIcon />}
-      </IconButton>
-    </Tooltip>
-  );
-}
 
 function Header() {
   const { isLoggedIn, user, logout } = useAuth();
@@ -46,82 +20,55 @@ function Header() {
   };
 
   return (
-    <AppBar position="static" color="default" elevation={0} sx={{ bgcolor: 'background.paper', borderBottom: '1px solid', borderColor: 'divider' }}>
-      <Toolbar>
-        <Typography
-          component={RouterLink}
-          to="/"
-          variant="h4"
-          sx={{ textDecoration: 'none', mr: 'auto', display: 'flex', gap: 0.5 }}
-        >
-          <Box component="span" sx={{ color: 'secondary.main' }}>Dog</Box>
-          <Box component="span" sx={{ color: 'primary.main' }}>GO</Box>
-        </Typography>
-
-        <Stack direction="row" spacing={1} alignItems="center">
-          {isLoggedIn ? (
-            <>
-              <Button component={RouterLink} to="/dashboard" variant="text" color="inherit">Dashboard</Button>
-              {user?.role === 'OWNER' ? (
-                <Button component={RouterLink} to="/owner" variant="text" color="inherit">Request Walk</Button>
-              ) : (
-                <Button component={RouterLink} to="/walker" variant="text" color="inherit">Find Jobs</Button>
-              )}
-              <ColorModeToggle />
-              <Button variant="contained" onClick={handleLogout}>Log Out</Button>
-            </>
-          ) : (
-            <>
-              <Button component={RouterLink} to="/login" variant="text" color="inherit">Log In</Button>
-              <ColorModeToggle />
-              <Button component={RouterLink} to="/signup" variant="contained">Sign Up</Button>
-            </>
-          )}
-        </Stack>
-      </Toolbar>
-    </AppBar>
-  );
-}
-
-function Landing() {
-  return (
-    <Container maxWidth="lg" sx={{ py: { xs: 4, md: 8 } }}>
-      <Stack
-        direction={{ xs: 'column', md: 'row' }}
-        spacing={{ xs: 4, md: 6 }}
-        alignItems="center"
-      >
-        <Box sx={{ flex: 1 }}>
-          <Typography variant="h1" sx={{ mb: 2, fontSize: { xs: '2.25rem', md: '3rem' } }}>
-            Premium Dog Walking on Demand.
-          </Typography>
-          <Typography variant="body1" color="text.secondary" sx={{ mb: 4, fontSize: '1.15rem' }}>
-            Connect with trusted, local dog walkers instantly. Give your furry best friend the walk they deserve while you focus on your day.
-          </Typography>
-          <Stack direction="row" spacing={2}>
-            <Button component={RouterLink} to="/signup" variant="contained" size="large">Get Started</Button>
-            <Button component={RouterLink} to="/login" variant="outlined" size="large">Log In</Button>
-          </Stack>
-        </Box>
-        <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
-          <Box
-            component="img"
-            src="/hero.png"
-            alt="Guillermo Trigger!"
-            sx={{ maxWidth: '100%', height: 'auto', borderRadius: 3 }}
-          />
-        </Box>
-      </Stack>
-    </Container>
+    <header className="main-header">
+      <Link to="/" style={{ textDecoration: 'none' }}>
+        <h1><span style={{ color: 'var(--accent-color)' }}>Dog</span>
+        <span style={{ color: 'var(--primary-color)' }}>GO</span></h1>
+      </Link>
+      <nav>
+        {isLoggedIn ? (
+          <>
+            <Link to="/dashboard" className="btn btn-outline" style={{ marginRight: '1rem' }}>Dashboard</Link>
+            {user?.role === 'OWNER' ? (
+              <Link to="/owner" className="btn btn-outline" style={{ marginRight: '1rem' }}>Request Walk</Link>
+            ) : (
+              <Link to="/walker" className="btn btn-outline" style={{ marginRight: '1rem' }}>Find Jobs</Link>
+            )}
+            <button className="btn btn-outline" onClick={handleLogout}>Log Out</button>
+          </>
+        ) : (
+          <>
+            <Link to="/login" className="btn btn-outline" style={{ marginRight: '1rem' }}>Log In</Link>
+            <Link to="/signup" className="btn">Sign Up</Link>
+          </>
+        )}
+      </nav>
+    </header>
   );
 }
 
 function AppContent() {
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+    <div className="app-container">
       <Header />
       <Routes>
-        <Route path="/" element={<Landing />} />
+        <Route path="/" element={
+          <div className="hero-section animate-fade-in">
+            <div className="hero-content">
+              <h2 style={{ fontSize: '3rem', marginBottom: '1rem', lineHeight: 1.2 }}>Premium Dog Walking on Demand.</h2>
+              <p style={{ fontSize: '1.2rem', marginBottom: '2rem', color: 'var(--background-light)', lineHeight: 1.6 }}>
+                Connect with trusted, local dog walkers instantly. Give your furry best friend the walk they deserve while you focus on your day.
+              </p>
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                <Link to="/signup" className="btn btn-large">Get Started</Link>
+                <Link to="/login" className="btn btn-large btn-outline">Log In</Link>
+              </div>
+            </div>
+            <div className="hero-image-container">
+              <img src="/hero.png" alt="Guillermo Trigger!" className="hero-image" />
+            </div>
+          </div>
+        } />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/dashboard" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
@@ -130,7 +77,7 @@ function AppContent() {
         <Route path="/walker" element={<PrivateRoute><WalkerView /></PrivateRoute>} />
         <Route path="/profile" element={<PrivateRoute><ProfileOwner /></PrivateRoute>} />
       </Routes>
-    </Box>
+    </div>
   );
 }
 

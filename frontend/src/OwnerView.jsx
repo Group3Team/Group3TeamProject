@@ -3,20 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import api from './services/api';
-import {
-  Box,
-  Container,
-  Paper,
-  Stack,
-  Typography,
-  TextField,
-  Button,
-  Chip,
-  Avatar,
-  LinearProgress,
-  Divider,
-} from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 // Fix for default marker icon in react-leaflet
 import L from 'leaflet';
@@ -40,6 +26,7 @@ export default function OwnerView() {
   const position = [51.505, -0.09];
   const navigate = useNavigate();
 
+  // Poll for status updates once a request is created
   useEffect(() => {
     let interval;
     if (activeRequestId && step !== 'request' && step !== 'completed') {
@@ -48,7 +35,7 @@ export default function OwnerView() {
           const response = await api.get(`/walk-requests/${activeRequestId}/`);
           const data = response.data;
           setActiveRequestData(data);
-
+          
           if (data.status === 'ACCEPTED') setStep('arriving');
           if (data.status === 'IN_PROGRESS') setStep('in_progress');
           if (data.status === 'COMPLETED') setStep('completed');
@@ -66,10 +53,10 @@ export default function OwnerView() {
   const requestWalk = async () => {
     try {
       setStep('searching');
-
+      
       const payload = {
-        owner: 1,
-        dogs: [],
+        owner: 1, 
+        dogs: [], 
         status: 'SEARCHING',
         pickup_location: 'POINT(-0.09 51.505)',
         owner_phone: ownerPhone,
@@ -83,6 +70,8 @@ export default function OwnerView() {
       const data = response.data;
 
       setActiveRequestId(data.id);
+      
+      // Removed simulations - the useEffect polling will now drive the state changes
     } catch (error) {
       console.error('Error requesting walk:', error);
       alert('Failed to request walk. Please ensure backend is running.');
@@ -95,6 +84,7 @@ export default function OwnerView() {
     try {
 
       await api.delete(`/walk-requests/${activeRequestId}/`);
+      
       setStep('request');
       setActiveRequestId(null);
     } catch (error) {
@@ -104,176 +94,159 @@ export default function OwnerView() {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ py: 3 }}>
-      <Stack
-        direction={{ xs: 'column', md: 'row' }}
-        spacing={3}
-        alignItems="stretch"
-      >
-        <Paper sx={{ p: 3, flex: 1 }}>
-          <Button
-            variant="outlined"
-            size="small"
-            startIcon={<ArrowBackIcon />}
-            onClick={() => navigate('/dashboard')}
-            sx={{ mb: 2 }}
-          >
-            Back to Menu
-          </Button>
-          <Typography variant="h3" sx={{ mb: 2 }}>Request a Dog Walker</Typography>
-
-          {step === 'request' && (
-            <Stack spacing={2}>
-              <TextField
-                label="Owner Phone Number"
+    <div className="grid-2 animate-fade-in">
+      <div className="glass-panel">
+        <button className="btn btn-outline" onClick={() => navigate('/dashboard')} style={{ marginBottom: '1.5rem', padding: '0.4rem 1rem', fontSize: '0.9rem' }}>
+          ← Back to Menu
+        </button>
+        <h2>Request a Dog Walker</h2>
+        
+        {step === 'request' && (
+          <div>
+            <div style={{ marginBottom: '1rem' }}>
+              <label style={{ display: 'block', marginBottom: '0.5rem' }}>Owner Phone Number</label>
+              <input 
+                type="text" 
+                className="input-field" 
                 placeholder="e.g., 555-0123"
-                fullWidth
-                value={ownerPhone}
-                onChange={(e) => setOwnerPhone(e.target.value)}
+                value={ownerPhone} 
+                onChange={(e) => setOwnerPhone(e.target.value)} 
               />
-              <TextField
-                label="Pickup Address"
+            </div>
+
+            <div style={{ marginBottom: '1rem' }}>
+              <label style={{ display: 'block', marginBottom: '0.5rem' }}>Pickup Address</label>
+              <input 
+                type="text" 
+                className="input-field" 
                 placeholder="123 Bark St, Woof City"
-                fullWidth
-                value={ownerAddress}
-                onChange={(e) => setOwnerAddress(e.target.value)}
+                value={ownerAddress} 
+                onChange={(e) => setOwnerAddress(e.target.value)} 
               />
-              <TextField
-                label="Walk Duration (minutes)"
-                type="number"
-                fullWidth
-                value={duration}
-                onChange={(e) => setDuration(e.target.value)}
-                slotProps={{ htmlInput: { min: 15, step: 15 } }}
+            </div>
+
+            <div style={{ marginBottom: '1rem' }}>
+              <label style={{ display: 'block', marginBottom: '0.5rem' }}>Walk Duration (minutes)</label>
+              <input 
+                type="number" 
+                className="input-field" 
+                value={duration} 
+                onChange={(e) => setDuration(e.target.value)} 
+                min="15" 
+                step="15"
               />
-              <TextField
-                label="Number of Dogs"
-                type="number"
-                fullWidth
-                value={dogs}
-                onChange={(e) => setDogs(e.target.value)}
-                slotProps={{ htmlInput: { min: 1, max: 5 } }}
+            </div>
+
+            <div style={{ marginBottom: '1rem' }}>
+              <label style={{ display: 'block', marginBottom: '0.5rem' }}>Number of Dogs</label>
+              <input 
+                type="number" 
+                className="input-field" 
+                value={dogs} 
+                onChange={(e) => setDogs(e.target.value)} 
+                min="1" 
+                max="5"
               />
-              <Button variant="contained" size="large" fullWidth onClick={requestWalk}>
-                Find Walker Now
-              </Button>
-            </Stack>
-          )}
+            </div>
+            
+            <button className="btn" style={{ width: '100%', marginTop: '1rem' }} onClick={requestWalk}>
+              Find Walker Now
+            </button>
+          </div>
+        )}
 
-          {step === 'searching' && (
-            <Stack spacing={3} alignItems="center" sx={{ py: 4, textAlign: 'center' }}>
-              <Chip label="Searching..." color="warning" />
-              <Typography variant="h5">Finding the best walker nearby...</Typography>
-              <Box sx={{ width: '100%' }}>
-                <LinearProgress />
-              </Box>
-              <Button variant="outlined" color="error" onClick={cancelRequest}>
-                Cancel Request
-              </Button>
-            </Stack>
-          )}
+        {step === 'searching' && (
+          <div style={{ textAlign: 'center', padding: '2rem 0' }}>
+            <div className="status-badge">Searching...</div>
+            <h3>Finding the best walker nearby...</h3>
+            <div style={{ marginTop: '2rem', height: '4px', background: 'rgba(255,255,255,0.1)', borderRadius: '2px', overflow: 'hidden' }}>
+              <div style={{ width: '50%', height: '100%', background: 'var(--accent-color)', animation: 'slide 2s infinite linear' }} />
+            </div>
+            <style>{`@keyframes slide { 0% { transform: translateX(-100%); } 100% { transform: translateX(200%); } }`}</style>
+            
+            <button 
+              className="btn btn-outline" 
+              style={{ marginTop: '2rem', borderColor: '#d63031', color: '#d63031' }}
+              onClick={cancelRequest}
+            >
+              Cancel Request
+            </button>
+          </div>
+        )}
 
-          {step === 'arriving' && (
-            <Stack spacing={2}>
-              <Chip label="Walker Arriving" color="primary" />
+        {step === 'arriving' && (
+          <div>
+            <div className="status-badge" style={{ background: 'var(--primary-color)' }}>Walker Arriving</div>
+            
+            <div className="walker-card">
+              <img src="/walker.png" alt="Walker avatar" className="walker-avatar" />
+              <div>
+                <h3 style={{ marginBottom: '0.2rem' }}>{activeRequestData?.walker_username || 'Your walker'} is on the way!</h3>
+                <p style={{ color: 'var(--background-light)', margin: 0 }}>★ 4.9 (120 walks) • Estimated arrival: 4 mins</p>
+              </div>
+            </div>
+            
+            <div style={{ background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem' }}>
+              <h4>Chat with {activeRequestData?.walker_username || 'your walker'}</h4>
+              <div style={{ height: '100px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', borderBottom: '1px solid var(--glass-border)', marginBottom: '1rem', paddingBottom: '0.5rem' }}>
+                <div style={{ background: 'var(--primary-color)', padding: '0.5rem', borderRadius: '8px', alignSelf: 'flex-start', marginBottom: '0.5rem' }}>Hi, I'm 2 blocks away!</div>
+              </div>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <input type="text" className="input-field" style={{ marginBottom: 0 }} placeholder="Type a message..." />
+                <button className="btn" style={{ padding: '0.5rem 1rem' }}>Send</button>
+              </div>
+            </div>
+            
+            <button className="btn" style={{ width: '100%', background: 'var(--success-color)' }} onClick={() => setStep('in_progress')}>
+              Simulate: Handover Dogs
+            </button>
+          </div>
+        )}
 
-              <Paper variant="outlined" sx={{ p: 2 }}>
-                <Stack direction="row" spacing={2} alignItems="center">
-                  <Avatar src="/walker.png" sx={{ width: 56, height: 56 }} />
-                  <Box>
-                    <Typography variant="h5" sx={{ mb: 0.25 }}>
-                      {activeRequestData?.walker_username || 'Your walker'} is on the way!
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      ★ 4.9 (120 walks) • Estimated arrival: 4 mins
-                    </Typography>
-                  </Box>
-                </Stack>
-              </Paper>
-
-              <Paper variant="outlined" sx={{ p: 2 }}>
-                <Typography variant="h6" sx={{ mb: 1 }}>
-                  Chat with {activeRequestData?.walker_username || 'your walker'}
-                </Typography>
-                <Box
-                  sx={{
-                    minHeight: 100,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'flex-end',
-                    borderBottom: '1px solid',
-                    borderColor: 'divider',
-                    mb: 1,
-                    pb: 1,
-                  }}
-                >
-                  <Box
-                    sx={{
-                      bgcolor: 'primary.main',
-                      color: 'primary.contrastText',
-                      p: 1,
-                      borderRadius: 2,
-                      alignSelf: 'flex-start',
-                    }}
-                  >
-                    Hi, I'm 2 blocks away!
-                  </Box>
-                </Box>
-                <Stack direction="row" spacing={1}>
-                  <TextField placeholder="Type a message..." size="small" fullWidth />
-                  <Button variant="contained">Send</Button>
-                </Stack>
-              </Paper>
-
-              <Button variant="contained" color="success" fullWidth onClick={() => setStep('in_progress')}>
-                Simulate: Handover Dogs
-              </Button>
-            </Stack>
-          )}
-
-          {step === 'in_progress' && (
-            <Stack spacing={2}>
-              <Chip label="Walk in Progress" color="success" />
-              <Typography variant="h5">Your dogs are having a great time!</Typography>
-              <Divider />
-              <Button variant="contained" color="secondary" fullWidth>
+        {step === 'in_progress' && (
+          <div>
+            <div className="status-badge" style={{ background: 'var(--success-color)' }}>Walk in Progress</div>
+            <h3>Your dogs are having a great time!</h3>
+            
+            <div style={{ marginTop: '2rem' }}>
+              <button className="btn" style={{ width: '100%', marginBottom: '1rem', background: 'var(--secondary-color)' }}>
                 Request Photo Update
-              </Button>
-              <Button variant="contained" fullWidth onClick={() => setStep('completed')}>
+              </button>
+              <button className="btn" style={{ width: '100%' }} onClick={() => setStep('completed')}>
                 Simulate: Complete Walk
-              </Button>
-            </Stack>
-          )}
+              </button>
+            </div>
+          </div>
+        )}
 
-          {step === 'completed' && (
-            <Stack spacing={2} alignItems="center" sx={{ textAlign: 'center', py: 2 }}>
-              <Chip label="Completed" color="success" />
-              <Typography variant="h4">Walk Finished!</Typography>
-              <Typography>Payment of $25.00 has been released.</Typography>
-              <Button variant="contained" onClick={() => setStep('request')}>New Walk</Button>
-            </Stack>
-          )}
-        </Paper>
+        {step === 'completed' && (
+          <div style={{ textAlign: 'center' }}>
+            <div className="status-badge" style={{ background: 'var(--success-color)' }}>Completed</div>
+            <h3>Walk Finished!</h3>
+            <p style={{ marginBottom: '2rem' }}>Payment of $25.00 has been released.</p>
+            <button className="btn" onClick={() => setStep('request')}>New Walk</button>
+          </div>
+        )}
+      </div>
 
-        <Paper sx={{ p: 1, flex: 1, minHeight: 400 }}>
-          <Box sx={{ height: '100%', minHeight: 400, borderRadius: 2, overflow: 'hidden' }}>
-            <MapContainer center={position} zoom={13} style={{ height: '100%', width: '100%', minHeight: 400 }}>
-              <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              />
-              <Marker position={position}>
-                <Popup>Your Location</Popup>
+      <div className="glass-panel" style={{ padding: '1rem' }}>
+        <div className="map-container">
+          <MapContainer center={position} zoom={13} style={{ height: '100%', width: '100%' }}>
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            <Marker position={position}>
+              <Popup>Your Location</Popup>
+            </Marker>
+            {(step === 'arriving' || step === 'in_progress') && (
+              <Marker position={[51.509, -0.08]}>
+                 <Popup>Walker</Popup>
               </Marker>
-              {(step === 'arriving' || step === 'in_progress') && (
-                <Marker position={[51.509, -0.08]}>
-                  <Popup>Walker</Popup>
-                </Marker>
-              )}
-            </MapContainer>
-          </Box>
-        </Paper>
-      </Stack>
-    </Container>
+            )}
+          </MapContainer>
+        </div>
+      </div>
+    </div>
   );
 }

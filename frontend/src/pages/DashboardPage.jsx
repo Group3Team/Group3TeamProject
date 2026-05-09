@@ -1,93 +1,40 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
-import {
-  Box,
-  Container,
-  Paper,
-  Stack,
-  Typography,
-  Button,
-  IconButton,
-  TextField,
-  MenuItem,
-  Alert,
-  Chip,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  CircularProgress,
-} from '@mui/material';
-import MapIcon from '@mui/icons-material/Map';
-import AddIcon from '@mui/icons-material/Add';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import PetsIcon from '@mui/icons-material/Pets';
-import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
-
-const SIZE_LABELS = { SMALL: 'Small', MEDIUM: 'Medium', LARGE: 'Large' };
-const emptyDogForm = { name: '', breed: '', size: 'MEDIUM', notes: '' };
-
-const STATUS_COLORS = {
-  SEARCHING: 'warning',
-  ACCEPTED: 'primary',
-  ARRIVING: 'info',
-  IN_PROGRESS: 'success',
-  COMPLETED: 'secondary',
-  CANCELLED: 'error',
-};
 
 export default function DashboardPage() {
   const { user, logout } = useAuth();
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
-      <Paper sx={{ p: 3, mb: 3 }}>
-        <Stack spacing={2} alignItems="flex-start">
-          <Box>
-            <Typography variant="h3">Dashboard</Typography>
-            <Typography color="text.secondary" sx={{ mt: 0.25 }}>
-              Welcome, <strong>{user?.username}</strong> · {user?.role}
-            </Typography>
-          </Box>
-          <Button variant="outlined" onClick={logout}>Log Out</Button>
-        </Stack>
-      </Paper>
+    <div style={{ maxWidth: '900px', margin: '0 auto', padding: '2rem 1rem' }}>
+      <div className="glass-panel" style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+        <div>
+          <h2 style={{ margin: 0 }}>Dashboard</h2>
+          <p style={{ margin: '0.25rem 0 0', color: 'var(--background-light)' }}>
+            Welcome, <strong>{user?.username}</strong> · {user?.role}
+          </p>
+        </div>
+        <button className="btn btn-outline" onClick={logout}>Log Out</button>
+      </div>
 
-      <Box sx={{ mb: 3 }}>
+      <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
         {user?.role === 'OWNER' ? (
-          <Button
-            component={RouterLink}
-            to="/owner"
-            variant="contained"
-            startIcon={<MapIcon />}
-          >
-            Request a Walk
-          </Button>
+          <Link to="/owner" className="btn" style={{ textDecoration: 'none' }}>🗺 Request a Walk</Link>
         ) : (
-          <Button
-            component={RouterLink}
-            to="/walker"
-            variant="contained"
-            startIcon={<MapIcon />}
-          >
-            Walker Map & Jobs
-          </Button>
+          <Link to="/walker" className="btn" style={{ textDecoration: 'none' }}>🗺 Walker Map & Jobs</Link>
         )}
-      </Box>
+      </div>
 
       {user?.role === 'OWNER' ? <OwnerDashboard /> : <WalkerDashboard />}
-    </Container>
+    </div>
   );
 }
+
+// ── Owner: Dogs CRUD ────────────────────────────────────────────────────────
+
+const SIZE_LABELS = { SMALL: 'Small', MEDIUM: 'Medium', LARGE: 'Large' };
+const emptyDogForm = { name: '', breed: '', size: 'MEDIUM', notes: '' };
 
 function OwnerDashboard() {
   const [dogs, setDogs] = useState([]);
@@ -153,105 +100,126 @@ function OwnerDashboard() {
   return (
     <>
       {error && (
-        <Alert severity="error" onClose={() => setError('')} sx={{ mb: 2 }}>
-          {error}
-        </Alert>
+        <p style={{ color: '#d63031', background: 'rgba(214,48,49,0.1)', padding: '0.75rem 1rem', borderRadius: '8px', marginBottom: '1rem', cursor: 'pointer' }}
+          onClick={() => setError('')}>
+          {error} <span style={{ float: 'right' }}>✕</span>
+        </p>
       )}
 
-      <Paper sx={{ p: 3 }}>
-        <Stack spacing={2} alignItems="flex-start" sx={{ mb: 2 }}>
-          <Typography variant="h4">My Dogs</Typography>
-          <Button variant="contained" startIcon={<AddIcon />} onClick={openAdd}>Add Dog</Button>
-        </Stack>
+      <div className="glass-panel">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+          <h3 style={{ margin: 0 }}>My Dogs</h3>
+          <button className="btn" onClick={openAdd}>+ Add Dog</button>
+        </div>
 
         {showForm && (
-          <Paper variant="outlined" component="form" onSubmit={handleSave} sx={{ p: 2.5, mb: 2.5 }}>
-            <Typography variant="h5" sx={{ mb: 2 }}>
-              {editingId ? 'Edit Dog' : 'Add New Dog'}
-            </Typography>
-            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
-              <TextField label="Name" required placeholder="Buddy" value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })} />
-              <TextField label="Breed" placeholder="Golden Retriever" value={form.breed}
-                onChange={(e) => setForm({ ...form, breed: e.target.value })} />
-              <TextField select label="Size" required value={form.size}
-                onChange={(e) => setForm({ ...form, size: e.target.value })}>
-                <MenuItem value="SMALL">Small</MenuItem>
-                <MenuItem value="MEDIUM">Medium</MenuItem>
-                <MenuItem value="LARGE">Large</MenuItem>
-              </TextField>
-              <TextField label="Notes" placeholder="Loves fetch..." value={form.notes}
-                onChange={(e) => setForm({ ...form, notes: e.target.value })} />
-            </Box>
-            <Stack direction="row" spacing={1.5} sx={{ mt: 2 }}>
-              <Button type="submit" variant="contained" disabled={saving}>
+          <form onSubmit={handleSave} style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '12px', padding: '1.5rem', marginBottom: '1.5rem' }}>
+            <h4 style={{ marginTop: 0 }}>{editingId ? 'Edit Dog' : 'Add New Dog'}</h4>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div>
+                <label style={labelStyle}>Name *</label>
+                <input className="input-field" required placeholder="Buddy" value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })} />
+              </div>
+              <div>
+                <label style={labelStyle}>Breed</label>
+                <input className="input-field" placeholder="Golden Retriever" value={form.breed}
+                  onChange={(e) => setForm({ ...form, breed: e.target.value })} />
+              </div>
+              <div>
+                <label style={labelStyle}>Size *</label>
+                <select className="input-field" value={form.size}
+                  onChange={(e) => setForm({ ...form, size: e.target.value })}>
+                  <option value="SMALL">Small</option>
+                  <option value="MEDIUM">Medium</option>
+                  <option value="LARGE">Large</option>
+                </select>
+              </div>
+              <div>
+                <label style={labelStyle}>Notes</label>
+                <input className="input-field" placeholder="Loves fetch..." value={form.notes}
+                  onChange={(e) => setForm({ ...form, notes: e.target.value })} />
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem' }}>
+              <button className="btn" type="submit" disabled={saving}>
                 {saving ? 'Saving...' : editingId ? 'Update Dog' : 'Add Dog'}
-              </Button>
-              <Button variant="outlined" onClick={() => setShowForm(false)}>Cancel</Button>
-            </Stack>
-          </Paper>
+              </button>
+              <button className="btn btn-outline" type="button" onClick={() => setShowForm(false)}>Cancel</button>
+            </div>
+          </form>
         )}
 
         {loading ? (
-          <Box sx={{ textAlign: 'center', py: 4 }}>
-            <CircularProgress />
-            <Typography color="text.secondary" sx={{ mt: 1 }}>Loading your dogs...</Typography>
-          </Box>
+          <p style={{ color: 'var(--background-light)', textAlign: 'center', padding: '2rem' }}>Loading your dogs...</p>
         ) : dogs.length === 0 ? (
-          <Stack alignItems="center" sx={{ py: 5 }}>
-            <PetsIcon sx={{ fontSize: 56, color: 'text.disabled', mb: 1 }} />
-            <Typography color="text.secondary">No dogs yet. Add your first dog above!</Typography>
-          </Stack>
+          <div style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--background-light)' }}>
+            <p style={{ fontSize: '3rem', margin: '0 0 0.5rem' }}>🐶</p>
+            <p>No dogs yet. Add your first dog above!</p>
+          </div>
         ) : (
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid var(--glass-border)' }}>
                   {['Name', 'Breed', 'Size', 'Notes', 'Actions'].map((h) => (
-                    <TableCell key={h} sx={{ textTransform: 'uppercase', fontSize: '0.8rem', color: 'text.secondary' }}>{h}</TableCell>
+                    <th key={h} style={{ textAlign: 'left', padding: '0.75rem 1rem', color: 'var(--background-light)', fontWeight: '600', fontSize: '0.85rem', textTransform: 'uppercase' }}>{h}</th>
                   ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
+                </tr>
+              </thead>
+              <tbody>
                 {dogs.map((dog) => (
-                  <TableRow key={dog.id} hover>
-                    <TableCell><strong>{dog.name}</strong></TableCell>
-                    <TableCell>{dog.breed || '—'}</TableCell>
-                    <TableCell>
-                      <Chip label={SIZE_LABELS[dog.size]} size="small" color="primary" variant="outlined" />
-                    </TableCell>
-                    <TableCell sx={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {dog.notes || '—'}
-                    </TableCell>
-                    <TableCell>
-                      <Stack direction="row" spacing={1}>
-                        <Button size="small" variant="outlined" onClick={() => openEdit(dog)}>Edit</Button>
-                        <Button size="small" variant="outlined" color="error" onClick={() => setDeleteConfirm(dog)}>Delete</Button>
-                      </Stack>
-                    </TableCell>
-                  </TableRow>
+                  <tr key={dog.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                    <td style={cellStyle}><strong>{dog.name}</strong></td>
+                    <td style={cellStyle}>{dog.breed || '—'}</td>
+                    <td style={cellStyle}>
+                      <span style={{ background: 'rgba(108,92,231,0.2)', color: 'var(--secondary-color)', padding: '0.2rem 0.6rem', borderRadius: '20px', fontSize: '0.8rem' }}>
+                        {SIZE_LABELS[dog.size]}
+                      </span>
+                    </td>
+                    <td style={{ ...cellStyle, maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{dog.notes || '—'}</td>
+                    <td style={cellStyle}>
+                      <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        <button className="btn btn-outline" style={{ padding: '0.3rem 0.75rem', fontSize: '0.85rem' }} onClick={() => openEdit(dog)}>Edit</button>
+                        <button style={{ padding: '0.3rem 0.75rem', fontSize: '0.85rem', background: 'rgba(214,48,49,0.15)', color: '#d63031', border: '1px solid rgba(214,48,49,0.3)', borderRadius: '8px', cursor: 'pointer' }}
+                          onClick={() => setDeleteConfirm(dog)}>Delete</button>
+                      </div>
+                    </td>
+                  </tr>
                 ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+              </tbody>
+            </table>
+          </div>
         )}
-      </Paper>
+      </div>
 
-      <Dialog open={!!deleteConfirm} onClose={() => setDeleteConfirm(null)}>
-        <DialogTitle>Delete {deleteConfirm?.name}?</DialogTitle>
-        <DialogContent>
-          <DialogContentText>This action cannot be undone.</DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button variant="outlined" onClick={() => setDeleteConfirm(null)}>Cancel</Button>
-          <Button variant="contained" color="error" onClick={() => handleDelete(deleteConfirm.id)}>
-            Yes, Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
+      {deleteConfirm && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+          <div className="glass-panel" style={{ maxWidth: '400px', width: '90%', textAlign: 'center' }}>
+            <h3 style={{ marginTop: 0 }}>Delete {deleteConfirm.name}?</h3>
+            <p style={{ color: 'var(--background-light)' }}>This action cannot be undone.</p>
+            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '1.5rem' }}>
+              <button className="btn btn-outline" onClick={() => setDeleteConfirm(null)}>Cancel</button>
+              <button style={{ padding: '0.6rem 1.5rem', background: '#d63031', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '600' }}
+                onClick={() => handleDelete(deleteConfirm.id)}>Yes, Delete</button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
+
+// ── Walker: Walk Requests ───────────────────────────────────────────────────
+
+const STATUS_COLORS = {
+  SEARCHING: '#fdcb6e',
+  ACCEPTED: '#6c5ce7',
+  ARRIVING: '#00cec9',
+  IN_PROGRESS: '#00b894',
+  COMPLETED: '#a29bfe',
+  CANCELLED: '#d63031',
+};
 
 function WalkerDashboard() {
   const [requests, setRequests] = useState([]);
@@ -283,65 +251,63 @@ function WalkerDashboard() {
   return (
     <>
       {error && (
-        <Alert severity="error" onClose={() => setError('')} sx={{ mb: 2 }}>
-          {error}
-        </Alert>
+        <p style={{ color: '#d63031', background: 'rgba(214,48,49,0.1)', padding: '0.75rem 1rem', borderRadius: '8px', marginBottom: '1rem', cursor: 'pointer' }}
+          onClick={() => setError('')}>
+          {error} <span style={{ float: 'right' }}>✕</span>
+        </p>
       )}
 
-      <Paper sx={{ p: 3 }}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
-          <Typography variant="h4">My Walk Requests</Typography>
-          <IconButton onClick={fetchRequests} aria-label="Refresh">
-            <RefreshIcon />
-          </IconButton>
-        </Stack>
+      <div className="glass-panel">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+          <h3 style={{ margin: 0 }}>My Walk Requests</h3>
+          <button className="btn btn-outline" style={{ fontSize: '0.85rem' }} onClick={fetchRequests}>Refresh</button>
+        </div>
 
         {loading ? (
-          <Box sx={{ textAlign: 'center', py: 4 }}>
-            <CircularProgress />
-            <Typography color="text.secondary" sx={{ mt: 1 }}>Loading walk requests...</Typography>
-          </Box>
+          <p style={{ color: 'var(--background-light)', textAlign: 'center', padding: '2rem' }}>Loading walk requests...</p>
         ) : requests.length === 0 ? (
-          <Stack alignItems="center" sx={{ py: 5 }}>
-            <DirectionsWalkIcon sx={{ fontSize: 56, color: 'text.disabled', mb: 1 }} />
-            <Typography color="text.secondary">No walk requests assigned to you yet.</Typography>
-          </Stack>
+          <div style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--background-light)' }}>
+            <p style={{ fontSize: '3rem', margin: '0 0 0.5rem' }}>🦮</p>
+            <p>No walk requests assigned to you yet.</p>
+          </div>
         ) : (
-          <Stack spacing={2}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {requests.map((req) => (
-              <Paper key={req.id} variant="outlined" sx={{ p: 2 }}>
-                <Stack direction="row" justifyContent="space-between" alignItems="flex-start" flexWrap="wrap" gap={1} sx={{ mb: 1.5 }}>
-                  <Box>
-                    <Typography sx={{ fontWeight: 600 }}>Walk #{req.id}</Typography>
-                    <Typography variant="body2" color="text.secondary">
+              <div key={req.id} style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '12px', padding: '1.25rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.75rem' }}>
+                  <div>
+                    <p style={{ margin: 0, fontWeight: '600' }}>Walk #{req.id}</p>
+                    <p style={{ margin: '0.2rem 0 0', color: 'var(--background-light)', fontSize: '0.85rem' }}>
                       {req.owner_address || 'No address provided'} · {req.duration_minutes ? `${req.duration_minutes} min` : '—'}
-                    </Typography>
-                  </Box>
-                  <Chip
-                    label={req.status.replace('_', ' ')}
-                    size="small"
-                    color={STATUS_COLORS[req.status] || 'default'}
-                  />
-                </Stack>
-                <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                    </p>
+                  </div>
+                  <span style={{ background: STATUS_COLORS[req.status] + '33', color: STATUS_COLORS[req.status], padding: '0.25rem 0.75rem', borderRadius: '20px', fontSize: '0.8rem', fontWeight: '600' }}>
+                    {req.status.replace('_', ' ')}
+                  </span>
+                </div>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                   {req.status === 'SEARCHING' && (
-                    <Button size="small" variant="contained" onClick={() => updateStatus(req.id, 'ACCEPTED')}>Accept</Button>
+                    <button className="btn" style={{ fontSize: '0.85rem', padding: '0.3rem 0.9rem' }} onClick={() => updateStatus(req.id, 'ACCEPTED')}>Accept</button>
                   )}
                   {req.status === 'ACCEPTED' && (
-                    <Button size="small" variant="contained" onClick={() => updateStatus(req.id, 'IN_PROGRESS')}>Start Walk</Button>
+                    <button className="btn" style={{ fontSize: '0.85rem', padding: '0.3rem 0.9rem' }} onClick={() => updateStatus(req.id, 'IN_PROGRESS')}>Start Walk</button>
                   )}
                   {req.status === 'IN_PROGRESS' && (
-                    <Button size="small" variant="contained" color="success" onClick={() => updateStatus(req.id, 'COMPLETED')}>Complete Walk</Button>
+                    <button className="btn" style={{ fontSize: '0.85rem', padding: '0.3rem 0.9rem', background: 'var(--success-color)' }} onClick={() => updateStatus(req.id, 'COMPLETED')}>Complete Walk</button>
                   )}
                   {(req.status === 'SEARCHING' || req.status === 'ACCEPTED') && (
-                    <Button size="small" variant="outlined" color="error" onClick={() => updateStatus(req.id, 'CANCELLED')}>Cancel</Button>
+                    <button style={{ fontSize: '0.85rem', padding: '0.3rem 0.9rem', background: 'rgba(214,48,49,0.15)', color: '#d63031', border: '1px solid rgba(214,48,49,0.3)', borderRadius: '8px', cursor: 'pointer' }}
+                      onClick={() => updateStatus(req.id, 'CANCELLED')}>Cancel</button>
                   )}
-                </Stack>
-              </Paper>
+                </div>
+              </div>
             ))}
-          </Stack>
+          </div>
         )}
-      </Paper>
+      </div>
     </>
   );
 }
+
+const labelStyle = { display: 'block', marginBottom: '0.3rem', fontWeight: '600', color: 'var(--background-light)', fontSize: '0.85rem' };
+const cellStyle = { padding: '0.85rem 1rem', color: '#fff' };

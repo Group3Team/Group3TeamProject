@@ -1,16 +1,6 @@
 import { useState } from 'react';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import {
-  Box,
-  Paper,
-  Typography,
-  TextField,
-  Button,
-  Alert,
-  Link,
-  Stack,
-} from '@mui/material';
 
 export default function LoginPage() {
   const [form, setForm] = useState({ username: '', password: '' });
@@ -34,50 +24,49 @@ export default function LoginPage() {
   };
 
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh', p: 2 }}>
-      <Paper sx={{ width: '100%', maxWidth: 420, p: 4 }}>
-        <Typography variant="h3" align="center" sx={{ mb: 3 }}>
-          Welcome Back
-        </Typography>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
+      <div className="glass-panel" style={{ width: '100%', maxWidth: '420px' }}>
+        <h2 style={{ textAlign: 'center', marginBottom: '1.5rem' }}>Welcome Back</h2>
 
-        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+        {error && (
+          <p style={{ color: '#d63031', background: 'rgba(214,48,49,0.1)', padding: '0.5rem 1rem', borderRadius: '8px', marginBottom: '1rem' }}>
+            {error}
+          </p>
+        )}
 
-        <Box component="form" onSubmit={handleSubmit}>
-          <Stack spacing={2}>
-            <TextField
-              label="Username"
-              placeholder="your_username"
-              required
-              fullWidth
-              value={form.username}
-              onChange={(e) => setForm({ ...form, username: e.target.value })}
-            />
-            <TextField
-              label="Password"
-              type="password"
-              placeholder="••••••••"
-              required
-              fullWidth
-              value={form.password}
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
-            />
-            <Button
-              type="submit"
-              variant="contained"
-              size="large"
-              fullWidth
-              disabled={loading}
-            >
-              {loading ? 'Logging in...' : 'Log In'}
-            </Button>
-          </Stack>
-        </Box>
+        <form onSubmit={handleSubmit}>
+          <label style={labelStyle}>Username</label>
+          <input
+            className="input-field"
+            type="text"
+            placeholder="your_username"
+            required
+            value={form.username}
+            onChange={(e) => setForm({ ...form, username: e.target.value })}
+          />
 
-        <Typography align="center" sx={{ mt: 3 }} color="text.secondary">
+          <label style={labelStyle}>Password</label>
+          <input
+            className="input-field"
+            type="password"
+            placeholder="••••••••"
+            required
+            value={form.password}
+            onChange={(e) => setForm({ ...form, password: e.target.value })}
+          />
+
+          <button className="btn" type="submit" style={{ width: '100%', marginTop: '0.5rem' }} disabled={loading}>
+            {loading ? 'Logging in...' : 'Log In'}
+          </button>
+        </form>
+
+        <p style={{ textAlign: 'center', marginTop: '1.5rem', color: 'var(--background-light)' }}>
           Don't have an account?{' '}
-          <Link component={RouterLink} to="/signup" sx={{ fontWeight: 600 }}>Sign Up</Link>
-        </Typography>
-      </Paper>
-    </Box>
+          <Link to="/signup" style={{ color: 'var(--accent-color)', fontWeight: '600' }}>Sign Up</Link>
+        </p>
+      </div>
+    </div>
   );
 }
+
+const labelStyle = { display: 'block', marginBottom: '0.3rem', fontWeight: '600', color: 'var(--background-light)' };

@@ -21,7 +21,8 @@ class User(AbstractUser):
 class WalkerProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='walker_profile')
     max_dogs = models.IntegerField(default=1)
-    ('service_radius_km', models.FloatField(default=5.0)),
+    # CORRECT: Assigned as a class attribute, no surrounding parentheses or trailing comma
+    service_radius_km = models.FloatField(default=5.0) 
     current_location = models.PointField(null=True, blank=True)
     is_online = models.BooleanField(default=False)
 

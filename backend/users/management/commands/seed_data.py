@@ -124,27 +124,27 @@ class Command(BaseCommand):
         dogs_data = [
             {"owner": created_owners[0], "name": "Rover", "breed": "Husky", "size": "LARGE", "notes": "Likes to play fetch"},
             {"owner": created_owners[0], "name": "Bella", "breed": "Border Collie", "size": "MEDIUM", "notes": "Very energetic, needs lots of exercise"},
-
             {"owner": created_owners[1], "name": "Bob", "breed": "German Shepard", "size": "LARGE", "notes": "Loves to run, well-trained"},
             {"owner": created_owners[1], "name": "Daisy", "breed": "Labrador Retriever", "size": "LARGE", "notes": "Friendly with other dogs, gentle"},
-
             {"owner": created_owners[2], "name": "Charlie", "breed": "Beagle", "size": "SMALL", "notes": "Curious, follows nose everywhere"},
             {"owner": created_owners[3], "name": "Milo", "breed": "French Bulldog", "size": "SMALL", "notes": "Low energy, short walks are enough"},
-
             {"owner": created_owners[4], "name": "Luna", "breed": "Australian Shepherd", "size": "MEDIUM", "notes": "Intelligent, responds to commands"},
             {"owner": created_owners[4], "name": "Max", "breed": "Golden Retriever", "size": "LARGE", "notes": "Friendly with everyone, loves water"},
         ]
 
         for d in dogs_data:
-            dog = Dog.objects.create(
+            dog, created = Dog.objects.get_or_create(
                 owner=d["owner"],
                 name=d["name"],
-                breed=d["breed"],
-                size=d["size"],
-                notes=d["notes"],
+                defaults={
+                    "breed": d["breed"],
+                    "size": d["size"],
+                    "notes": d["notes"],
+                }
             )
+            status = "CREATED" if created else "EXISTING (skipped)"
             self.stdout.write(
-                f"  [CREATED] Dog: {dog.name} ({dog.breed}, {d['size']}) owned by {d['owner'].username}"
+                f"  [{status}] Dog: {dog.name} ({dog.breed}, {d['size']}) owned by {d['owner'].username}"
             )
 
         # Create walkers
@@ -166,7 +166,7 @@ class Command(BaseCommand):
                 user.set_password(data["password"])
                 user.save()
 
-            wp, _ = WalkerProfile.objects.get_or_create(
+            wp, created_profile = WalkerProfile.objects.get_or_create(
                 user=user,
                 defaults={
                     "current_location": data["service_location"],
@@ -175,7 +175,7 @@ class Command(BaseCommand):
                     "service_radius_km": 32.0,
                 },
             )
-            if not _:
+            if not created_profile:
                 wp.current_location = data["service_location"]
                 wp.is_online = True
                 wp.max_dogs = 3
@@ -195,14 +195,15 @@ class Command(BaseCommand):
         self.stdout.write(f"Total Owners:      {len(created_owners)}")
         for o in created_owners:
             dog_count = Dog.objects.filter(owner=o).count()
-            self.stdout.write(f"  - {o.username} ({o.email}) \u2014 {dog_count} dog(s)")
+            self.stdout.write(f"  - {o.username} ({o.email}) — {dog_count} dog(s)")
 
         walker_count = User.objects.filter(role='WALKER').count()
         self.stdout.write(f"Total Walkers:     {walker_count}")
         for w in User.objects.filter(role='WALKER'):
             wp = WalkerProfile.objects.get(user=w)
+            
             self.stdout.write(
-                f"  - {w.username} ({w.email}) \u2014 online={wp.is_online}, radius={wp.service_radius_km}km"
+                f"  - {w.username} ({w.email}) — online={wp.is_online}, max_dogs={wp.max_dogs}"
             )
 
         self.stdout.write("")

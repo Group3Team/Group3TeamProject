@@ -42,7 +42,7 @@ services:
       dockerfile: Dockerfile.prod
     container_name: react-frontend-nginx
     ports:
-      - "9000:80"
+      - "80:80"
     networks:
       - app-network
     restart: unless-stopped

@@ -172,14 +172,14 @@ class Command(BaseCommand):
                     "current_location": data["service_location"],
                     "is_online": True,
                     "max_dogs": 3,
-                    "service_radius_miles": 20.0,
+                    "service_radius_km": 32.0,
                 },
             )
             if not _:
                 wp.current_location = data["service_location"]
                 wp.is_online = True
                 wp.max_dogs = 3
-                wp.service_radius_miles = 20.0
+                wp.service_radius_km = 32.0
                 wp.save()
 
             status = "CREATED" if created else "EXISTING (updated)"
@@ -202,7 +202,7 @@ class Command(BaseCommand):
         for w in User.objects.filter(role='WALKER'):
             wp = WalkerProfile.objects.get(user=w)
             self.stdout.write(
-                f"  - {w.username} ({w.email}) \u2014 online={wp.is_online}, radius={wp.service_radius_miles}mi"
+                f"  - {w.username} ({w.email}) \u2014 online={wp.is_online}, radius={wp.service_radius_km}km"
             )
 
         self.stdout.write("")

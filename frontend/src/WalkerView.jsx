@@ -18,7 +18,9 @@ import {
   List,
   ListItem,
   ListItemText,
+  TextField,
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
@@ -27,10 +29,12 @@ export default function WalkerView() {
   const [isOnline, setIsOnline] = useState(false);
   const [request, setRequest] = useState(null);
   const [activeRequestData, setActiveRequestData] = useState(null);
-  const [, setWalkerLocation] = useState('');
+  const [walkerLocation, setWalkerLocation] = useState(null);
+  const [walkerAddress, setWalkerAddress] = useState('');
   const [routeInfo, setRouteInfo] = useState(null);
 
   const navigate = useNavigate();
+  const theme = useTheme();
 
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
@@ -122,6 +126,24 @@ export default function WalkerView() {
     };
   }, []);
 
+  async function geocodeAddress(address) {
+    const token = import.meta.env.VITE_MAPBOX_KEY;
+    const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?limit=1&access_token=${token}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    const feature = data?.features?.[0];
+    if (!feature) return null;
+    const [lng, lat] = feature.center;
+    return { lng, lat };
+  }
+
+  function parsePickupLocation(pickup) {
+    if (!pickup) return null;
+    const match = String(pickup).match(/POINT\s*\(\s*(-?\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)\s*\)/i);
+    if (!match) return null;
+    return { lng: parseFloat(match[1]), lat: parseFloat(match[2]) };
+  }
+
   async function getRoute(start, end) {
     const map = mapInstanceRef.current;
     if (!map) return;
@@ -149,7 +171,7 @@ export default function WalkerView() {
       );
 
       const routeLine = L.polyline(coords, {
-        color: "blue",
+        color: theme.palette.primary.main,
         weight: 5,
         opacity: 0.75,
       }).addTo(map);
@@ -229,14 +251,42 @@ export default function WalkerView() {
                 <Typography><strong>Duration:</strong> {activeRequestData.duration_minutes || '30'} mins</Typography>
                 <Typography><strong>Status:</strong> {activeRequestData.status}</Typography>
               </Stack>
+              <TextField
+                label="Your Address (optional — overrides locate)"
+                placeholder="e.g., 123 Main St, City"
+                fullWidth
+                size="small"
+                value={walkerAddress}
+                onChange={(e) => setWalkerAddress(e.target.value)}
+                sx={{ mb: 2 }}
+              />
               <Stack direction="row" spacing={2}>
                 <Button
                   variant="contained"
                   color="success"
                   fullWidth
-                  onClick={() => {
+                  onClick={async () => {
+                    let startCoords = walkerLocation;
+                    if (walkerAddress.trim()) {
+                      startCoords = await geocodeAddress(walkerAddress);
+                      if (!startCoords) {
+                        alert("Couldn't find that address. Try a more specific one.");
+                        return;
+                      }
+                    }
+                    if (!startCoords) {
+                      alert('Enter your address or click the locate button on the map.');
+                      return;
+                    }
+                    const pickup = parsePickupLocation(activeRequestData.pickup_location);
+                    if (!pickup) {
+                      alert('Pickup location missing on this request.');
+                      return;
+                    }
                     updateRequestStatus('ACCEPTED');
-                    getRoute('-111.739,40.3805', '-111.7534,40.3661');
+                    const start = `${startCoords.lng},${startCoords.lat}`;
+                    const end = `${pickup.lng},${pickup.lat}`;
+                    getRoute(start, end);
                   }}
                 >
                   Accept

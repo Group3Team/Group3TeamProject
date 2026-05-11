@@ -5,6 +5,8 @@ SOURCE="/home/na/Desktop/CodePlatoon/Group3TeamProject/"
 DEST_USER="ubuntu"
 DEST_IP="3.141.121.100"
 DEST_PATH="/home/ubuntu/Group3TeamProject"
+# Since you're running this from the scripts folder, 
+# we'll point to the key in the Downloads folder
 KEY_PATH="$HOME/Downloads/Beer1.pem"
 
 # --- Script Logic ---

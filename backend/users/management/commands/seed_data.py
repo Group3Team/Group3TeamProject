@@ -4,80 +4,29 @@ from users.models import OwnerProfile, WalkerProfile
 from walks.models import Dog
 from django.contrib.gis.geos import Point
 
-
 User = get_user_model()
 
 owners_data = [
-    {
-        "username": "dogowner1",
-        "email": "owner1@test.com",
-        "password": "Test1234",
-        "first_name": "Alice",
-        "last_name": "Johnson",
-        "home_location": Point(-122.4148, 37.7599, srid=4326),
-    },
-    {
-        "username": "dogowner2",
-        "email": "owner2@test.com",
-        "password": "Test1234",
-        "first_name": "Bob",
-        "last_name": "Smith",
-        "home_location": Point(-122.4860, 37.7490, srid=4326),
-    },
-    {
-        "username": "dogowner3",
-        "email": "owner3@test.com",
-        "password": "Test1234",
-        "first_name": "Carol",
-        "last_name": "Martinez",
-        "home_location": Point(-122.2712, 37.8044, srid=4326),
-    },
-    {
-        "username": "dogowner4",
-        "email": "owner4@test.com",
-        "password": "Test1234",
-        "first_name": "David",
-        "last_name": "Kim",
-        "home_location": Point(-122.1430, 37.4419, srid=4326),
-    },
-    {
-        "username": "dogowner5",
-        "email": "owner5@test.com",
-        "password": "Test1234",
-        "first_name": "Elena",
-        "last_name": "Patel",
-        "home_location": Point(-122.0653, 37.9063, srid=4326),
-    },
+    # 20th Street and Mission Street, San Francisco, CA 94110
+    {"username": "dogowner1", "email": "owner1@test.com", "password": "Test1234", "first_name": "Alice", "last_name": "Johnson", "home_location": Point(-122.4148, 37.7599, srid=4326)},
+    # 41st Avenue and Rivera Street, San Francisco, CA 94122
+    {"username": "dogowner2", "email": "owner2@test.com", "password": "Test1234", "first_name": "Bob", "last_name": "Smith", "home_location": Point(-122.4860, 37.7490, srid=4326)},
+    # 8th Street and Broadway, Oakland, CA 94607
+    {"username": "dogowner3", "email": "owner3@test.com", "password": "Test1234", "first_name": "Carol", "last_name": "Martinez", "home_location": Point(-122.2712, 37.8044, srid=4326)},
+    # University Avenue and Middlefield Road, Palo Alto, CA 94301
+    {"username": "dogowner4", "email": "owner4@test.com", "password": "Test1234", "first_name": "David", "last_name": "Kim", "home_location": Point(-122.1430, 37.4419, srid=4326)},
+    # Olympic Blvd and S Main St, Los Angeles, CA 90015
+    {"username": "dogowner5", "email": "owner5@test.com", "password": "Test1234", "first_name": "Elena", "last_name": "Patel", "home_location": Point(-122.0653, 37.9063, srid=4326)},
 ]
 
 walkers_data = [
-    {
-        "username": "walker1",
-        "email": "walker1@test.com",
-        "password": "Test1234",
-        "first_name": "Sarah",
-        "last_name": "Williams",
-        "service_location": Point(-122.4148, 37.7599, srid=4326),
-    },
-    {
-        "username": "walker2",
-        "email": "walker2@test.com",
-        "password": "Test1234",
-        "first_name": "Mike",
-        "last_name": "Chen",
-        "service_location": Point(-122.2712, 37.8044, srid=4326),
-    },
-    {
-        "username": "walker3",
-        "email": "walker3@test.com",
-        "password": "Test1234",
-        "first_name": "Jessica",
-        "last_name": "Davis",
-        "service_location": Point(-122.2364, 37.4852, srid=4326),
-    },
+    # 20th Street and Mission Street, San Francisco, CA 94110
+    {"username": "walker1", "email": "walker1@test.com", "password": "Test1234", "first_name": "Sarah", "last_name": "Williams", "service_location": Point(-122.4148, 37.7599, srid=4326)},
+    # 8th Street and Broadway, Oakland, CA 94607
+    {"username": "walker2", "email": "walker2@test.com", "password": "Test1234", "first_name": "Mike", "last_name": "Chen", "service_location": Point(-122.2712, 37.8044, srid=4326)},
+    # Fair Oaks Avenue and Bay Road, Redwood City, CA 94063
+    {"username": "walker3", "email": "walker3@test.com", "password": "Test1234", "first_name": "Jessica", "last_name": "Davis", "service_location": Point(-122.2364, 37.4852, srid=4326)},
 ]
-
-
 class Command(BaseCommand):
     help = 'Seed the database with test users and dogs for DogGO'
 
